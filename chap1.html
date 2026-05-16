@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physique — Plan 99/1 — 5/18</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {
+    delimiters: [
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ],
+    throwOnError: false
+  });"></script>
+<style>
+:root {
+  --bg: #EFF6FF;
+  --sidebar-bg: #1e3a5f;
+  --sidebar-text: #c8dff7;
+  --sidebar-active: #60a5fa;
+  --sidebar-hover: #2d5282;
+  --accent: #1d4ed8;
+  --accent-light: #dbeafe;
+  --accent-mid: #3b82f6;
+  --green: #16a34a;
+  --green-light: #dcfce7;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --orange: #d97706;
+  --orange-light: #fef3c7;
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --border: #bfdbfe;
+  --card: #ffffff;
+  --sidebar-width: 260px;
+  --font-body: 'DM Sans', sans-serif;
+  --font-serif: 'Source Serif 4', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.7;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* SIDEBAR */
+#sidebar {
+  width: var(--sidebar-width);
+  background: var(--sidebar-bg);
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+#sidebar-header {
+  padding: 24px 20px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+#sidebar-header h2 {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sidebar-active);
+  margin-bottom: 4px;
+}
+
+#sidebar-header p {
+  font-size: 12px;
+  color: rgba(200,223,247,0.6);
+  line-height: 1.4;
+}
+
+#progress-bar-wrap {
+  padding: 14px 20px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+#progress-bar-wrap span {
+  font-size: 11px;
+  color: rgba(200,223,247,0.5);
+  display: block;
+  margin-bottom: 6px;
+  font-family: var(--font-mono);
+}
+
+#progress-bar {
+  height: 4px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+#progress-fill {
+  height: 100%;
+  background: var(--sidebar-active);
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+#sidebar nav { padding: 10px 0; flex: 1; }
+
+.nav-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 20px;
+  cursor: pointer;
+  color: var(--sidebar-text);
+  font-size: 13px;
+  line-height: 1.4;
+  transition: background 0.15s, color 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.nav-item:hover { background: var(--sidebar-hover); }
+
+.nav-item.active {
+  background: rgba(96,165,250,0.12);
+  color: var(--sidebar-active);
+  border-left-color: var(--sidebar-active);
+  font-weight: 600;
+}
+
+.nav-item.done { color: rgba(200,223,247,0.45); }
+.nav-item.done .nav-num { color: var(--green); }
+
+.nav-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(200,223,247,0.4);
+  min-width: 20px;
+  padding-top: 1px;
+}
+
+.nav-freq {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+.freq-high { background: rgba(220,38,38,0.3); color: #fca5a5; }
+.freq-med { background: rgba(217,119,6,0.3); color: #fcd34d; }
+
+/* MAIN */
+#main {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  max-width: 820px;
+  padding: 48px 48px 80px;
+}
+
+/* SECTION */
+.section { display: none; animation: fadeIn 0.25s ease; }
+.section.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity:0; transform: translateY(6px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-mid);
+  margin-bottom: 8px;
+}
+
+h1.section-title {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.25;
+  margin-bottom: 6px;
+}
+
+.section-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+h2 {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 36px 0 12px;
+}
+
+h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 24px 0 10px;
+  font-family: var(--font-mono);
+}
+
+p { margin-bottom: 14px; }
+
+/* CARDS */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin: 16px 0;
+}
+
+.card-formula {
+  background: var(--accent-light);
+  border-color: #93c5fd;
+  border-left: 4px solid var(--accent);
+}
+
+.card-exam {
+  background: #fffbeb;
+  border-color: #fde68a;
+  border-left: 4px solid var(--orange);
+}
+
+.card-exam-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--orange);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.card-example {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  border-left: 4px solid var(--green);
+}
+
+.card-example-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--green);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.card-warning {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  border-left: 4px solid var(--orange);
+}
+
+.formula-block {
+  font-size: 16px;
+  margin: 10px 0;
+  overflow-x: auto;
+}
+
+.step {
+  display: flex;
+  gap: 12px;
+  margin: 8px 0;
+  align-items: flex-start;
+}
+
+.step-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 2px 7px;
+  border-radius: 4px;
+  min-width: 28px;
+  text-align: center;
+  margin-top: 2px;
+}
+
+.step-content { flex: 1; }
+
+/* EXAM OCCURRENCES TABLE */
+.occur-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 12px 0;
+}
+.occur-table th {
+  background: var(--accent-light);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 7px 12px;
+  text-align: left;
+  letter-spacing: 0.06em;
+}
+.occur-table td {
+  padding: 7px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: top;
+}
+.occur-table tr:last-child td { border-bottom: none; }
+.occur-table tr:nth-child(even) td { background: #f8faff; }
+
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+.badge-green { background: var(--green-light); color: var(--green); }
+.badge-orange { background: var(--orange-light); color: var(--orange); }
+.badge-blue { background: var(--accent-light); color: var(--accent); }
+
+/* QUIZ */
+.quiz-block {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 32px 0 24px;
+}
+
+.quiz-header {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.quiz-question {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+
+.quiz-options { display: flex; flex-direction: column; gap: 8px; }
+
+.quiz-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 14px;
+  background: #fafcff;
+}
+.quiz-option:hover { border-color: var(--accent-mid); background: var(--accent-light); }
+.quiz-option input[type="radio"] { margin-top: 2px; accent-color: var(--accent); }
+.quiz-option.correct { border-color: var(--green); background: var(--green-light); }
+.quiz-option.wrong { border-color: var(--red); background: var(--red-light); }
+
+.quiz-submit {
+  margin-top: 14px;
+  padding: 9px 22px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.quiz-submit:hover { background: #1e40af; }
+.quiz-submit:disabled { background: #94a3b8; cursor: default; }
+
+.quiz-feedback {
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: none;
+  line-height: 1.6;
+}
+.quiz-feedback.correct { background: var(--green-light); color: #14532d; }
+.quiz-feedback.wrong { background: var(--red-light); color: #7f1d1d; }
+
+/* CANVAS */
+.canvas-wrap {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 16px 0;
+  background: #fff;
+}
+canvas { display: block; }
+
+/* NAV BUTTONS */
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.btn {
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+}
+
+.btn-prev {
+  background: var(--card);
+  border: 1.5px solid var(--border);
+  color: var(--text-muted);
+}
+.btn-prev:hover { border-color: var(--accent-mid); color: var(--accent); }
+
+.btn-next {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-next:hover { background: #1e40af; }
+.btn-next:disabled { background: #94a3b8; cursor: default; }
+
+/* CODE */
+code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--accent-light);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--accent);
+}
+
+/* DONE BANNER */
+#done-banner {
+  display: none;
+  text-align: center;
+  padding: 60px 40px;
+}
+#done-banner h1 {
+  font-family: var(--font-serif);
+  font-size: 36px;
+  color: var(--green);
+  margin-bottom: 16px;
+}
+#done-banner p { color: var(--text-muted); font-size: 16px; }
+
+ul, ol { margin: 0 0 14px 24px; }
+li { margin-bottom: 5px; }
+
+.highlight-box {
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 14px 0;
+  font-size: 14px;
+}
+.highlight-box.blue { background: var(--accent-light); border-left: 3px solid var(--accent); }
+.highlight-box.green { background: var(--green-light); border-left: 3px solid var(--green); }
+.highlight-box.orange { background: var(--orange-light); border-left: 3px solid var(--orange); }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+@media (max-width: 700px) {
+  .two-col { grid-template-columns: 1fr; }
+  #main { padding: 24px 20px 60px; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+  <div id="sidebar-header">
+    <h2>Physique — 99/1</h2>
+    <p>Objectif : 5/18 en 2 jours</p>
+  </div>
+  <div id="progress-bar-wrap">
+    <span id="progress-text">0 / 8 sections</span>
+    <div id="progress-bar"><div id="progress-fill"></div></div>
+  </div>
+  <nav id="nav">
+    <div class="nav-item active" onclick="goTo(0)">
+      <span class="nav-num">1.</span>
+      <span>Travail d'une force</span>
+      <span class="nav-freq freq-high">100%</span>
+    </div>
+    <div class="nav-item" onclick="goTo(1)">
+      <span class="nav-num">2.</span>
+      <span>Théorème de l'énergie cinétique</span>
+      <span class="nav-freq freq-high">95%</span>
+    </div>
+    <div class="nav-item" onclick="goTo(2)">
+      <span class="nav-num">3.</span>
+      <span>Conservation de l'énergie mécanique</span>
+      <span class="nav-freq freq-high">85%</span>
+    </div>
+    <div class="nav-item" onclick="goTo(3)">
+      <span class="nav-num">4.</span>
+      <span>Force conservative</span>
+      <span class="nav-freq freq-high">80%</span>
+    </div>
+    <div class="nav-item" onclick="goTo(4)">
+      <span class="nav-num">5.</span>
+      <span>Phaseur</span>
+      <span class="nav-freq freq-high">90%</span>
+    </div>
+    <div class="nav-item" onclick="goTo(5)">
+      <span class="nav-num">6.</span>
+      <span>Impédance complexe Z</span>
+      <span class="nav-freq freq-high">95%</span>
+    </div>
+    <div class="nav-item" onclick="goTo(6)">
+      <span class="nav-num">7.</span>
+      <span>Constante de temps RC et RL</span>
+      <span class="nav-freq freq-med">85%</span>
+    </div>
+    <div class="nav-item" onclick="goTo(7)">
+      <span class="nav-num">8.</span>
+      <span>Direction du champ magnétique B</span>
+      <span class="nav-freq freq-med">70%</span>
+    </div>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main id="main">
+
+<!-- ============================
+     SECTION 1 : TRAVAIL
+============================= -->
+<section class="section active" id="sec-0">
+  <div class="section-label">Section 1 sur 8 — Théorie garantie</div>
+  <h1 class="section-title">Travail d'une force</h1>
+  <p class="section-meta">Présent dans 100 % des examens depuis 2005. Cette définition tombe à chaque session, mot pour mot. C'est 2 à 4 points offerts.</p>
+
+  <h3>Pourquoi ça tombe toujours</h3>
+  <p>Le prof considère que le travail est le concept fondateur du cours. Voici les formulations exactes utilisées dans les examens :</p>
+
+  <div class="card card-exam">
+    <div class="card-exam-label">Questions exactes tombées à l'examen</div>
+    <table class="occur-table">
+      <tr><th>Année</th><th>Formulation exacte</th><th>Points</th></tr>
+      <tr><td>Juin 2024</td><td>Définissez le travail d'une force constante déplaçant son point d'application sur un segment rectiligne</td><td><span class="badge badge-blue">2 pts</span></td></tr>
+      <tr><td>Juin 2022</td><td>Donnez la définition et les unités du travail d'une force quelconque</td><td><span class="badge badge-blue">2 pts</span></td></tr>
+      <tr><td>Juin 2019</td><td>Donner l'expression générale du travail d'une force (non constante)</td><td><span class="badge badge-blue">2 pts</span></td></tr>
+      <tr><td>Juin 2018</td><td>Définition du travail d'une force quelconque sur une trajectoire quelconque</td><td><span class="badge badge-blue">2 pts</span></td></tr>
+      <tr><td>Août 2015</td><td>Donnez l'expression mathématique générale du travail W(A→B) d'une force</td><td><span class="badge badge-blue">5 pts</span></td></tr>
+      <tr><td>Juin 2013</td><td>Quelle est la grandeur physique mesurée par le kWh ? (application du travail)</td><td><span class="badge badge-blue">2 pts</span></td></tr>
+      <tr><td>Août 2006</td><td>Donnez la définition générale du travail d'une force quelconque</td><td><span class="badge badge-blue">–</span></td></tr>
+    </table>
+  </div>
+
+  <h2>1. Intuition</h2>
+  <p>Une force effectue un travail quand elle déplace son point d'application. Si tu pousses un mur sans bouger, le travail est nul. Si tu soulèves une caisse de 1 mètre, la force pesanteur effectue un travail négatif (elle s'oppose au déplacement).</p>
+  <p>L'idée clé : seule la composante de la force dans la direction du déplacement compte.</p>
+
+  <h2>2. Formules à connaître</h2>
+
+  <div class="card card-formula">
+    <strong>Cas général — force variable, trajectoire quelconque :</strong>
+    <div class="formula-block">$$W = \int_A^B \vec{F} \cdot d\vec{l}$$</div>
+    <p style="margin-top:8px; margin-bottom:0; font-size:14px;">où $d\vec{l}$ est un élément infinitésimal de déplacement tangent à la trajectoire, et le symbole $\cdot$ désigne le produit scalaire.</p>
+  </div>
+
+  <div class="card card-formula">
+    <strong>Cas particulier — force constante, déplacement rectiligne :</strong>
+    <div class="formula-block">$$W = \vec{F} \cdot \vec{d} = F \cdot d \cdot \cos\theta$$</div>
+    <p style="margin-top:8px; margin-bottom:0; font-size:14px;">où $\theta$ est l'angle entre la force $\vec{F}$ et le déplacement $\vec{d}$.</p>
+  </div>
+
+  <div class="card card-formula">
+    <strong>Unité :</strong>
+    <div class="formula-block">$$[W] = \text{Joule (J)} = \text{N} \cdot \text{m} = \text{kg} \cdot \text{m}^2 \cdot \text{s}^{-2}$$</div>
+  </div>
+
+  <div class="card card-warning">
+    <strong>Attention — 3 pièges classiques :</strong>
+    <ul style="margin-top:8px;">
+      <li>Si la force est perpendiculaire au déplacement ($\theta = 90°$), alors $W = 0$ (aucun travail).</li>
+      <li>Le travail est un scalaire, pas un vecteur.</li>
+      <li>Le prof exige toujours d'expliciter la signification des symboles si on donne une formule.</li>
+    </ul>
+  </div>
+
+  <h2>3. Exemple chiffré — tiré de l'examen juin 2012</h2>
+
+  <div class="card card-example">
+    <div class="card-example-label">Examen juin 2012 — Question 1a</div>
+    <p><strong>Énoncé :</strong> Un arc est bandé d'une distance $x_{\text{recul}} = 10 \text{ cm}$. La force exercée par la corde vaut $F = Kx$ avec $K = 200 \text{ N/m}$. Calculer le travail accompli pour bander l'arc.</p>
+
+    <div class="step"><span class="step-num">1</span><div class="step-content">La force varie avec $x$, donc on utilise la formule intégrale :</div></div>
+    $$W = \int_0^{0{,}1} F(x)\, dx = \int_0^{0{,}1} Kx\, dx$$
+
+    <div class="step"><span class="step-num">2</span><div class="step-content">On calcule l'intégrale :</div></div>
+    $$W = K \left[\frac{x^2}{2}\right]_0^{0{,}1} = 200 \times \frac{(0{,}1)^2}{2} = 200 \times 0{,}005 = 1 \text{ J}$$
+
+    <p style="margin-top:12px; margin-bottom:0;"><strong>Réponse : $W = 1$ J.</strong> Le travail accompli pour bander l'arc est de 1 joule.</p>
+  </div>
+
+  <h2>4. Ce que tu dois écrire à l'examen</h2>
+  <p>Si la question est "donnez la définition du travail d'une force quelconque", voici la réponse complète attendue :</p>
+
+  <div class="highlight-box blue">
+    Le travail d'une force $\vec{F}$ pour déplacer son point d'application d'un point A à un point B le long d'une trajectoire quelconque est défini par :<br><br>
+    $$W_{A \to B} = \int_A^B \vec{F} \cdot d\vec{l}$$<br>
+    où $d\vec{l}$ est un élément infinitésimal de déplacement tangent à la trajectoire. L'unité du travail est le joule (J). Dans le cas particulier d'une force constante et d'un déplacement rectiligne de longueur $d$ : $W = F \cdot d \cdot \cos\theta$, où $\theta$ est l'angle entre la force et le déplacement.
+  </div>
+
+  <h2>5. Application — kWh (examen juin 2013)</h2>
+  <div class="card card-exam">
+    <div class="card-exam-label">Examen Juin 2013 — Question 1 (3 pts)</div>
+    <p><strong>Question :</strong> Les factures d'électricité sont libellées en kWh. Quelle est la grandeur physique mesurée ? Quelle est l'unité dans le système international ? Calculez le facteur de conversion entre kWh et Joule.</p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">Watt = unité de puissance. Watt × heure = puissance × durée = <strong>énergie</strong> (= travail).</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content">L'unité SI de l'énergie est le <strong>joule (J)</strong>.</div></div>
+    <div class="step"><span class="step-num">3</span><div class="step-content">Conversion : $1 \text{ kWh} = 1000 \text{ W} \times 3600 \text{ s} = 3{,}6 \times 10^6 \text{ J}$.</div></div>
+  </div>
+
+  <!-- QUIZ 1 -->
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Section 1</div>
+    <div class="quiz-question">Une balle de 0,5 kg tombe verticalement sur une hauteur de 2 m. La force de pesanteur vaut $F = mg = 5$ N. Quel est le travail de la force de pesanteur ? (prendre $g = 10$ m/s²)</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q1" value="0"> $W = 0$ J — la pesanteur est perpendiculaire au déplacement</label>
+      <label class="quiz-option"><input type="radio" name="q1" value="1"> $W = 10$ J — force et déplacement sont dans le même sens</label>
+      <label class="quiz-option"><input type="radio" name="q1" value="2"> $W = -10$ J — la pesanteur s'oppose au déplacement</label>
+      <label class="quiz-option"><input type="radio" name="q1" value="3"> $W = 5$ J — la force vaut 5 N</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz(1)">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-1"></div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Formule générale</div>
+    <div class="quiz-question">Une force constante de 10 N est appliquée à un angle de 60° par rapport au déplacement. L'objet se déplace de 4 m. Quel est le travail de cette force ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q1b" value="0"> $W = 40$ J</label>
+      <label class="quiz-option"><input type="radio" name="q1b" value="1"> $W = 34{,}6$ J</label>
+      <label class="quiz-option"><input type="radio" name="q1b" value="2"> $W = 20$ J</label>
+      <label class="quiz-option"><input type="radio" name="q1b" value="3"> $W = 0$ J</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz('1b')">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-1b"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-prev" disabled>— Précédent</button>
+    <button class="btn btn-next" onclick="goTo(1)">Suivant : Énergie cinétique —</button>
+  </div>
+</section>
+
+<!-- ============================
+     SECTION 2 : ÉNERGIE CINÉTIQUE
+============================= -->
+<section class="section" id="sec-1">
+  <div class="section-label">Section 2 sur 8 — Théorie garantie</div>
+  <h1 class="section-title">Théorème de l'énergie cinétique</h1>
+  <p class="section-meta">Présent dans ~95 % des examens. Souvent combiné avec le travail (section 1). Vaut 2 à 5 points en théorie et ouvre les exercices de mécanique.</p>
+
+  <div class="card card-exam">
+    <div class="card-exam-label">Questions exactes tombées à l'examen</div>
+    <table class="occur-table">
+      <tr><th>Année</th><th>Formulation exacte</th><th>Points</th></tr>
+      <tr><td>Juin 2024</td><td>Énoncez le théorème de l'énergie cinétique</td><td><span class="badge badge-blue">4 pts</span></td></tr>
+      <tr><td>Juin 2022</td><td>Définir l'énergie cinétique d'un mobile (+ unités)</td><td><span class="badge badge-blue">2 pts</span></td></tr>
+      <tr><td>Juin 2019</td><td>Force conservative ssi $\oint \vec{F} \cdot d\vec{l} = 0$ — vrai ou faux + ce que conserve une force conservative</td><td><span class="badge badge-blue">4 pts</span></td></tr>
+      <tr><td>Juin 2015</td><td>Énoncer le théorème de l'énergie cinétique + exemple concret</td><td><span class="badge badge-blue">4 pts</span></td></tr>
+      <tr><td>Juin 2013</td><td>Définir l'énergie cinétique + énoncer le théorème</td><td><span class="badge badge-blue">4 pts</span></td></tr>
+      <tr><td>Août 2006</td><td>Question directe sur le vecteur position → vitesse → accélération (application du théorème)</td><td><span class="badge badge-blue">–</span></td></tr>
+    </table>
+  </div>
+
+  <h2>1. Définition de l'énergie cinétique</h2>
+  <div class="card card-formula">
+    <strong>L'énergie cinétique</strong> d'une masse ponctuelle $m$ se déplaçant à la vitesse $v$ :
+    <div class="formula-block">$$K = \frac{1}{2}mv^2$$</div>
+    <p style="margin:8px 0 0; font-size:14px;">Unité : joule (J). C'est une grandeur <em>scalaire</em>, toujours positive ou nulle.</p>
+  </div>
+
+  <h2>2. Le théorème</h2>
+  <div class="card card-formula">
+    <strong>Théorème de l'énergie cinétique :</strong> Le travail total effectué par toutes les forces appliquées à un objet entre A et B est égal à la variation de son énergie cinétique :
+    <div class="formula-block">$$W_{A \to B} = K_B - K_A = \frac{1}{2}mv_B^2 - \frac{1}{2}mv_A^2$$</div>
+    <p style="margin:8px 0 0; font-size:14px;">Ce théorème est valable pour une force quelconque (conservative ou non) et une trajectoire quelconque.</p>
+  </div>
+
+  <div class="card card-warning">
+    <strong>Ce que le prof attend toujours :</strong>
+    <ul style="margin-top:8px;">
+      <li>La définition de $K$ d'abord.</li>
+      <li>L'énoncé : "le travail effectué par la force est égal à la variation d'énergie cinétique".</li>
+      <li>Un exemple ou une situation concrète.</li>
+    </ul>
+  </div>
+
+  <h2>3. Exemple tiré de l'examen juin 2012</h2>
+  <div class="card card-example">
+    <div class="card-example-label">Examen Juin 2012 — Question 1b (suite flèche)</div>
+    <p>On a trouvé à la question précédente que $W = 1$ J est stocké dans l'arc (masse flèche = 0,8 g = $8 \times 10^{-4}$ kg). À quelle vitesse la flèche est-elle propulsée ?</p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">La flèche part de l'arrêt, donc $v_A = 0$ et $K_A = 0$. On applique le théorème :</div></div>
+    $$W = K_B - K_A = \frac{1}{2}mv_B^2 - 0$$
+    <div class="step"><span class="step-num">2</span><div class="step-content">On isole $v_B$ :</div></div>
+    $$v_B^2 = \frac{2W}{m} = \frac{2 \times 1}{8 \times 10^{-4}} = 2500 \text{ m}^2/\text{s}^2$$
+    <div class="step"><span class="step-num">3</span><div class="step-content">On prend la racine :</div></div>
+    $$v_B = \sqrt{2500} = 50 \text{ m/s} = 180 \text{ km/h}$$
+  </div>
+
+  <h2>4. Application directe — examen juin 2023</h2>
+  <div class="card card-exam">
+    <div class="card-exam-label">Examen Juin 2023 — Question 3a (2 pts)</div>
+    <p><strong>Énoncé :</strong> Une balle de masse $m$ est attachée à une corde de longueur $L$, maintenue initialement horizontale. On lâche la balle. Quelle est sa vitesse au point le plus bas de la trajectoire ?</p>
+
+    <div class="step"><span class="step-num">1</span><div class="step-content">La balle part du repos : $v_A = 0$, $K_A = 0$. Elle descend d'une hauteur $h = L$ (la corde part horizontale).</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content">Le travail de la pesanteur sur cette descente vaut :</div></div>
+    $$W_{\text{pesanteur}} = mgL$$
+    <div class="step"><span class="step-num">3</span><div class="step-content">On applique le théorème de l'énergie cinétique :</div></div>
+    $$W = K_B - K_A \implies mgL = \frac{1}{2}mv_B^2$$
+    <div class="step"><span class="step-num">4</span><div class="step-content">On simplifie par $m$ et on isole $v_B$ :</div></div>
+    $$v_B = \sqrt{2gL}$$
+    <p style="margin-top:12px; font-weight:600;">Réponse : $v_{\text{bas}} = \sqrt{2gL}$</p>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Section 2</div>
+    <div class="quiz-question">Une voiture de 1000 kg passe de 0 à 72 km/h (= 20 m/s). Quel est le travail net effectué sur la voiture ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q2" value="0"> $W = 72\,000$ J</label>
+      <label class="quiz-option"><input type="radio" name="q2" value="1"> $W = 200\,000$ J</label>
+      <label class="quiz-option"><input type="radio" name="q2" value="2"> $W = 400\,000$ J</label>
+      <label class="quiz-option"><input type="radio" name="q2" value="3"> $W = 20\,000$ J</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz(2)">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-2"></div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Vrai ou Faux (type examen)</div>
+    <div class="quiz-question">Vrai ou faux : le théorème de l'énergie cinétique ne s'applique que dans le cas d'une force conservative.</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q2b" value="0"> Vrai — il faut que la force soit conservative.</label>
+      <label class="quiz-option"><input type="radio" name="q2b" value="1"> Faux — le théorème s'applique à n'importe quelle force, conservative ou non.</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz('2b')">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-2b"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-prev" onclick="goTo(0)">— Précédent</button>
+    <button class="btn btn-next" onclick="goTo(2)">Suivant : Conservation de l'énergie —</button>
+  </div>
+</section>
+
+<!-- ============================
+     SECTION 3 : CONSERVATION ÉNERGIE
+============================= -->
+<section class="section" id="sec-2">
+  <div class="section-label">Section 3 sur 8 — Exercice récurrent</div>
+  <h1 class="section-title">Conservation de l'énergie mécanique</h1>
+  <p class="section-meta">Les premières sous-questions des exercices de mécanique (pendule, perchiste, enfant sur toboggan...) utilisent toutes ce principe. C'est 2 à 6 points quasi-certains si tu maîtrises ça.</p>
+
+  <h2>1. Le principe</h2>
+  <div class="card card-formula">
+    <strong>Si toutes les forces sont conservatives</strong> (pesanteur, ressort), l'énergie mécanique totale est constante :
+    <div class="formula-block">$$E_{\text{mec}} = K + U = \text{constante}$$</div>
+    <div class="formula-block">$$\frac{1}{2}mv_A^2 + mgh_A = \frac{1}{2}mv_B^2 + mgh_B$$</div>
+    <p style="margin-top:8px; font-size:14px;">où $h$ est la hauteur mesurée par rapport à un niveau de référence quelconque (à toi de choisir).</p>
+  </div>
+
+  <div class="card card-warning">
+    <strong>Quand ce principe ne s'applique PAS :</strong> si des forces non conservatives sont présentes (frottement, résistance de l'air). Dans ce cas, l'énergie mécanique diminue : la différence est convertie en chaleur.
+  </div>
+
+  <h2>2. Méthode en 4 étapes</h2>
+  <div class="step"><span class="step-num">1</span><div class="step-content">Choisir un niveau de référence pour l'énergie potentielle (souvent le point le plus bas).</div></div>
+  <div class="step"><span class="step-num">2</span><div class="step-content">Écrire $K_A + U_A$ au point de départ A. Si la balle part du repos : $K_A = 0$.</div></div>
+  <div class="step"><span class="step-num">3</span><div class="step-content">Écrire $K_B + U_B$ au point d'arrivée B.</div></div>
+  <div class="step"><span class="step-num">4</span><div class="step-content">Poser $K_A + U_A = K_B + U_B$ et isoler l'inconnue.</div></div>
+
+  <h2>3. Exercice complet — Examen Juin 2023</h2>
+
+  <div class="card card-exam">
+    <div class="card-exam-label">Examen Juin 2023 — Question 3 (10 + 4 bonus pts)</div>
+    <p>Une balle de masse $m$ est attachée à une corde de longueur $L$, maintenue initialement horizontale. On lâche la balle.</p>
+
+    <canvas id="pendulum-canvas" width="420" height="200"></canvas>
+
+    <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Schéma : pendule lâché depuis la position horizontale.</p>
+
+    <p><strong>3a. [2 pts] — Vitesse au point le plus bas</strong></p>
+    <div class="step"><span class="step-num">A</span><div class="step-content">Départ : $v_A = 0$, hauteur $h_A = L$ au-dessus du point le plus bas (référence $h_B = 0$).</div></div>
+    $$K_A + U_A = K_B + U_B$$
+    $$0 + mgL = \frac{1}{2}mv_B^2 + 0$$
+    $$\boxed{v_B = \sqrt{2gL}}$$
+
+    <p style="margin-top:16px;"><strong>3b. [2 pts] — On place un crochet à hauteur $h = 0{,}75L$ en-dessous du point fixe. Vitesse au sommet de la demi-trajectoire circulaire.</strong></p>
+    <p>Le rayon de la nouvelle trajectoire circulaire est $R = L - h = L - 0{,}75L = 0{,}25L$. Le sommet de cette trajectoire est à une hauteur $\Delta z = 2R = 2(L-h) = 0{,}5L$ au-dessus du point bas.</p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">On applique conservation de l'énergie entre le point bas (vitesse $v_B = \sqrt{2gL}$, hauteur 0) et le sommet (vitesse $v_{\text{haut}}$, hauteur $0{,}5L$) :</div></div>
+    $$\frac{1}{2}mv_B^2 = \frac{1}{2}mv_{\text{haut}}^2 + mg \cdot 0{,}5L$$
+    $$mgL = \frac{1}{2}mv_{\text{haut}}^2 + 0{,}5mgL$$
+    $$\frac{1}{2}mv_{\text{haut}}^2 = 0{,}5mgL$$
+    $$\boxed{v_{\text{haut}} = \sqrt{gL}}$$
+  </div>
+
+  <h2>4. Autre exemple récurrent — Toboggan (Août 2014)</h2>
+  <div class="card card-exam">
+    <div class="card-exam-label">Examen Août 2014 — Question 3 (8 pts)</div>
+    <p>Un enfant de 20 kg descend un toboggan de hauteur 4 m et arrive en bas à $v = 7{,}2$ km/h $= 2$ m/s. Combien de chaleur fut dissipée ?</p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">Énergie au départ (en haut, $v = 0$) :</div></div>
+    $$E_A = mgh = 20 \times 10 \times 4 = 800 \text{ J}$$
+    <div class="step"><span class="step-num">2</span><div class="step-content">Énergie à l'arrivée (en bas, $h = 0$) :</div></div>
+    $$E_B = \frac{1}{2}mv^2 = \frac{1}{2} \times 20 \times (2)^2 = 40 \text{ J}$$
+    <div class="step"><span class="step-num">3</span><div class="step-content">Chaleur dissipée = différence (énergie "perdue") :</div></div>
+    $$Q = E_A - E_B = 800 - 40 = 760 \text{ J}$$
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Section 3</div>
+    <div class="quiz-question">Une balle de masse $m$ est lâchée depuis une hauteur $h = 5$ m sans vitesse initiale. On néglige les frottements. Quelle est sa vitesse juste avant de toucher le sol ? (prendre $g = 10$ m/s²)</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q3" value="0"> $v = \sqrt{5} \approx 2{,}24$ m/s</label>
+      <label class="quiz-option"><input type="radio" name="q3" value="1"> $v = \sqrt{50} \approx 7{,}07$ m/s</label>
+      <label class="quiz-option"><input type="radio" name="q3" value="2"> $v = \sqrt{100} = 10$ m/s</label>
+      <label class="quiz-option"><input type="radio" name="q3" value="3"> $v = 5$ m/s</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz(3)">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-3"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-prev" onclick="goTo(1)">— Précédent</button>
+    <button class="btn btn-next" onclick="goTo(3)">Suivant : Force conservative —</button>
+  </div>
+</section>
+
+<!-- ============================
+     SECTION 4 : FORCE CONSERVATIVE
+============================= -->
+<section class="section" id="sec-3">
+  <div class="section-label">Section 4 sur 8 — Théorie récurrente</div>
+  <h1 class="section-title">Force conservative</h1>
+  <p class="section-meta">Présente dans ~80 % des examens, souvent en lien direct avec le travail et l'énergie potentielle. Vaut 2 à 5 points en théorie.</p>
+
+  <div class="card card-exam">
+    <div class="card-exam-label">Questions exactes tombées à l'examen</div>
+    <table class="occur-table">
+      <tr><th>Année</th><th>Formulation exacte</th><th>Points</th></tr>
+      <tr><td>Juin 2024</td><td>Définissez une force conservative + citez un exemple + un exemple de force non conservative</td><td><span class="badge badge-blue">6 pts</span></td></tr>
+      <tr><td>Juin 2019</td><td>Vrai/Faux : "La force de gravité est conservative ssi $\oint \vec{F} \cdot d\vec{l} = 0$" — justifier</td><td><span class="badge badge-blue">4 pts</span></td></tr>
+      <tr><td>Juin 2015</td><td>Définition mathématique ou graphique d'une force conservative + 2 exemples + intérêt</td><td><span class="badge badge-blue">6 pts</span></td></tr>
+      <tr><td>Juin 2013</td><td>Sous quelle(s) condition(s) y a-t-il conservation de l'énergie mécanique ?</td><td><span class="badge badge-blue">3 pts</span></td></tr>
+      <tr><td>Août 2015</td><td>À quelle condition le travail peut-il s'exprimer comme $W = U(B) - U(A)$ ?</td><td><span class="badge badge-blue">5 pts</span></td></tr>
+    </table>
+  </div>
+
+  <h2>1. Définition</h2>
+  <div class="card card-formula">
+    <strong>Une force est dite conservative</strong> si son travail ne dépend pas du chemin suivi, mais uniquement des positions initiale et finale. Cela s'exprime mathématiquement par :
+    <div class="formula-block">$$\oint \vec{F} \cdot d\vec{l} = 0$$</div>
+    <p style="margin-top:8px; font-size:14px;">Le symbole $\oint$ désigne une intégrale sur un contour fermé. Si on revient au point de départ, le travail net de la force est nul.</p>
+  </div>
+
+  <div class="card card-formula">
+    <strong>Conséquence clé :</strong> à une force conservative, on peut associer une énergie potentielle $U$ telle que :
+    <div class="formula-block">$$W_{A \to B} = U(A) - U(B) = -(U(B) - U(A))$$</div>
+  </div>
+
+  <h2>2. Exemples à connaître</h2>
+  <div class="two-col">
+    <div class="card" style="border-left:3px solid var(--green)">
+      <strong style="color:var(--green)">Forces conservatives</strong>
+      <ul style="margin-top:8px; margin-bottom:0;">
+        <li>Force de pesanteur ($\vec{F} = m\vec{g}$)</li>
+        <li>Force élastique (ressort, $F = -kx$)</li>
+        <li>Force électrostatique (Coulomb)</li>
+        <li>Force gravitationnelle (Newton)</li>
+      </ul>
+    </div>
+    <div class="card" style="border-left:3px solid var(--red)">
+      <strong style="color:var(--red)">Forces non conservatives</strong>
+      <ul style="margin-top:8px; margin-bottom:0;">
+        <li>Force de frottement</li>
+        <li>Force de résistance de l'air</li>
+        <li>Force de frottement cinétique</li>
+        <li>Force magnétique</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>3. Démonstration que la force de frottement n'est pas conservative</h2>
+  <p>Si on déplace un objet de A à B par un chemin court (distance $d_1$), puis qu'on revient de B à A par un chemin long (distance $d_2 > d_1$), le travail de la force de frottement vaut :</p>
+  $$W_{\text{tot}} = -f \cdot d_1 - f \cdot d_2 = -f(d_1 + d_2) \neq 0$$
+  <p>Le travail sur le contour fermé n'est pas nul : la force de frottement n'est donc pas conservative.</p>
+
+  <h2>4. Ce que le prof attend exactement (juin 2024)</h2>
+  <div class="highlight-box blue">
+    <strong>Définition :</strong> Une force est conservative si et seulement si son travail pour déplacer son point d'application d'un point A à un point B est indépendant du chemin suivi entre A et B. De manière équivalente, le travail de la force le long de tout contour fermé est nul : $\oint \vec{F} \cdot d\vec{l} = 0$.<br><br>
+    <strong>Exemple conservative :</strong> la pesanteur — le travail pour monter de 1 m ne dépend pas de la trajectoire choisie.<br><br>
+    <strong>Exemple non conservative :</strong> la force de frottement — plus le chemin est long, plus le travail (en valeur absolue) est grand.
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Section 4</div>
+    <div class="quiz-question">Parmi les propositions suivantes, laquelle est correcte ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q4" value="0"> Une force est conservative si son travail est toujours positif.</label>
+      <label class="quiz-option"><input type="radio" name="q4" value="1"> Une force est conservative si son travail sur un contour fermé est nul.</label>
+      <label class="quiz-option"><input type="radio" name="q4" value="2"> Une force est conservative si elle est constante en direction et en intensité.</label>
+      <label class="quiz-option"><input type="radio" name="q4" value="3"> Une force est conservative si elle est perpendiculaire au déplacement.</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz(4)">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-4"></div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Identification (type examen)</div>
+    <div class="quiz-question">La force magnétique $\vec{F} = q\vec{v} \times \vec{B}$ est-elle conservative ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q4b" value="0"> Oui, car elle dérive d'un potentiel magnétique.</label>
+      <label class="quiz-option"><input type="radio" name="q4b" value="1"> Non, car son travail dépend de la trajectoire.</label>
+      <label class="quiz-option"><input type="radio" name="q4b" value="2"> Non, mais pour une raison différente : elle est toujours perpendiculaire à la vitesse, donc son travail est toujours nul — elle ne peut donc pas conserver d'énergie potentielle.</label>
+      <label class="quiz-option"><input type="radio" name="q4b" value="3"> Oui, car le module de la vitesse est conservé.</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz('4b')">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-4b"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-prev" onclick="goTo(2)">— Précédent</button>
+    <button class="btn btn-next" onclick="goTo(4)">Suivant : Phaseur —</button>
+  </div>
+</section>
+
+<!-- ============================
+     SECTION 5 : PHASEUR
+============================= -->
+<section class="section" id="sec-4">
+  <div class="section-label">Section 5 sur 8 — Théorie + exercices</div>
+  <h1 class="section-title">Phaseur</h1>
+  <p class="section-meta">Présent dans ~90 % des examens, toujours en partie théorie ET en partie exercices. Sans comprendre les phaseurs, les exercices sur les circuits AC sont impossibles.</p>
+
+  <div class="card card-exam">
+    <div class="card-exam-label">Questions exactes tombées à l'examen</div>
+    <table class="occur-table">
+      <tr><th>Année</th><th>Formulation exacte</th><th>Points</th></tr>
+      <tr><td>Juin 2022</td><td>Définir le phaseur d'une tension alternative</td><td><span class="badge badge-blue">2 pts</span></td></tr>
+      <tr><td>Juin 2019</td><td>Écrire le phaseur associé à $v(t) = v_0 \sin(\omega t + \varphi)$ + dessiner le vecteur de Fresnel</td><td><span class="badge badge-blue">4 pts</span></td></tr>
+      <tr><td>Juin 2018</td><td>Définition du phaseur d'une grandeur électrique</td><td><span class="badge badge-blue">2 pts</span></td></tr>
+      <tr><td>Juin 2017</td><td>Définition du phaseur d'un courant alternatif déphasé de $\varphi$ par rapport à la tension</td><td><span class="badge badge-blue">2 pts</span></td></tr>
+      <tr><td>Juin 2015</td><td>Donner l'expression du phaseur du courant et de la tension + écrire l'impédance en fonction de $i_0$, $v_0$ et $\varphi$</td><td><span class="badge badge-blue">5 pts</span></td></tr>
+    </table>
+  </div>
+
+  <h2>1. Intuition</h2>
+  <p>Un signal alternatif sinusoïdal comme $v(t) = v_0 \cos(\omega t + \varphi)$ est complètement caractérisé par trois paramètres : son amplitude $v_0$, sa pulsation $\omega$ et sa phase $\varphi$.</p>
+  <p>Le phaseur est un <strong>nombre complexe</strong> qui encode l'amplitude et la phase en une seule notation compacte. La pulsation $\omega$ est implicite (commune à tous les signaux du circuit).</p>
+
+  <h2>2. Définition et notation</h2>
+  <div class="card card-formula">
+    <strong>Le phaseur</strong> associé au signal $v(t) = v_0 \cos(\omega t + \varphi)$ est :
+    <div class="formula-block">$$\hat{V} = v_0 \, e^{j\varphi} = v_0 (\cos\varphi + j\sin\varphi)$$</div>
+    <p style="margin-top:8px; font-size:14px;">La grandeur physique réelle se récupère par : $v(t) = \text{Re}\!\left(\hat{V} \, e^{j\omega t}\right)$</p>
+  </div>
+
+  <div class="card card-warning">
+    <strong>Attention — sinus ou cosinus ?</strong><br>
+    En pratique, le prof écrit souvent $v(t) = v_0 \sin(\omega t + \varphi)$. Dans ce cas, on peut soit convertir ($\sin = \cos(\cdot - \pi/2)$), soit utiliser la partie imaginaire. L'important est d'être cohérent dans tout le problème.
+  </div>
+
+  <h2>3. Notation — ce que tu dois savoir écrire</h2>
+
+  <div class="card card-example">
+    <div class="card-example-label">Examen Juin 2019</div>
+    <p><strong>Question :</strong> Écrire le phaseur de $v(t) = v_0 \sin(\omega t + \varphi)$ si $v_0 = 6$ V, $\varphi = \pi/4$, $\omega = 2\pi \times 50$ rad/s.</p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">Le phaseur s'écrit : $\hat{V} = v_0 e^{j\varphi} = 6 \, e^{j\pi/4}$</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content">En forme algébrique : $\hat{V} = 6(\cos(\pi/4) + j\sin(\pi/4)) = 6\left(\frac{\sqrt{2}}{2} + j\frac{\sqrt{2}}{2}\right) = 3\sqrt{2} + 3\sqrt{2}\,j$</div></div>
+    <div class="step"><span class="step-num">3</span><div class="step-content">Le vecteur de Fresnel est un vecteur de longueur 6 faisant un angle $\pi/4 = 45°$ avec l'axe réel.</div></div>
+  </div>
+
+  <h2>4. Dessin du vecteur de Fresnel</h2>
+  <canvas id="fresnel-canvas" width="300" height="200"></canvas>
+  <p style="font-size:13px; color:var(--text-muted);">Vecteur de Fresnel pour $\hat{V} = 6e^{j\pi/4}$ : amplitude = 6, angle = 45°.</p>
+
+  <h2>5. Cas particuliers importants</h2>
+  <table class="occur-table">
+    <tr><th>Signal</th><th>Phaseur</th><th>Remarque</th></tr>
+    <tr><td>$v_0 \cos(\omega t)$</td><td>$\hat{V} = v_0$</td><td>Phase nulle (référence)</td></tr>
+    <tr><td>$v_0 \cos(\omega t + \pi/2)$</td><td>$\hat{V} = v_0 \, e^{j\pi/2} = j v_0$</td><td>En avance de 90°</td></tr>
+    <tr><td>$v_0 \cos(\omega t - \pi/2)$</td><td>$\hat{V} = v_0 \, e^{-j\pi/2} = -j v_0$</td><td>En retard de 90°</td></tr>
+    <tr><td>$v_0 \cos(\omega t + \pi)$</td><td>$\hat{V} = -v_0$</td><td>En opposition de phase</td></tr>
+  </table>
+
+  <!-- QUIZ -->
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Section 5</div>
+    <div class="quiz-question">Quel est le phaseur associé au courant $i(t) = 3\cos(\omega t - \pi/3)$ ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q5" value="0"> $\hat{I} = 3\,e^{j\pi/3}$</label>
+      <label class="quiz-option"><input type="radio" name="q5" value="1"> $\hat{I} = 3\,e^{-j\pi/3}$</label>
+      <label class="quiz-option"><input type="radio" name="q5" value="2"> $\hat{I} = -3\,e^{j\pi/3}$</label>
+      <label class="quiz-option"><input type="radio" name="q5" value="3"> $\hat{I} = 3j$</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz(5)">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-5"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-prev" onclick="goTo(3)">— Précédent</button>
+    <button class="btn btn-next" onclick="goTo(5)">Suivant : Impédance complexe —</button>
+  </div>
+</section>
+
+<!-- ============================
+     SECTION 6 : IMPÉDANCE
+============================= -->
+<section class="section" id="sec-5">
+  <div class="section-label">Section 6 sur 8 — Théorie + exercices</div>
+  <h1 class="section-title">Impédance complexe Z</h1>
+  <p class="section-meta">Présente dans 95 % des examens — toujours dans les exercices, souvent en théorie. C'est le cœur des exercices AC. Maîtriser $Z_R$, $Z_L$, $Z_C$ et savoir calculer $|Z|$ te donne accès à beaucoup de points.</p>
+
+  <div class="card card-exam">
+    <div class="card-exam-label">Questions exactes tombées à l'examen</div>
+    <table class="occur-table">
+      <tr><th>Année</th><th>Ce qui était demandé</th><th>Points</th></tr>
+      <tr><td>Juin 2024</td><td>Définir l'impédance (en termes de phaseurs) + montrer que c'est une généralisation de R</td><td><span class="badge badge-blue">4 pts</span></td></tr>
+      <tr><td>Juin 2023</td><td>Impédance de chaque ampoule (RL série) + déphasage en AC</td><td><span class="badge badge-blue">5 pts</span></td></tr>
+      <tr><td>Juin 2022</td><td>Définir l'impédance complexe d'un circuit</td><td><span class="badge badge-blue">2 pts</span></td></tr>
+      <tr><td>Juin 2019</td><td>Définir l'impédance Z + écrire l'impédance d'un composant connaissant v(t) et i(t)</td><td><span class="badge badge-blue">4 pts</span></td></tr>
+      <tr><td>Juin 2017</td><td>Définition de l'impédance complexe d'un circuit</td><td><span class="badge badge-blue">2 pts</span></td></tr>
+      <tr><td>Juin 2016</td><td>Définir l'impédance + démontrer la formule pour n composants en parallèle</td><td><span class="badge badge-blue">7 pts</span></td></tr>
+    </table>
+  </div>
+
+  <h2>1. Définition</h2>
+  <div class="card card-formula">
+    <strong>L'impédance complexe</strong> d'un composant (ou circuit) est le rapport du phaseur de la tension à celui du courant :
+    <div class="formula-block">$$Z = \frac{\hat{V}}{\hat{I}}$$</div>
+    <p style="margin-top:8px; font-size:14px;">C'est la généralisation de la résistance au courant alternatif. L'unité est l'ohm (Ω).</p>
+  </div>
+
+  <h2>2. Les trois impédances de base — à connaître par coeur</h2>
+
+  <div class="card card-formula">
+    <table class="occur-table" style="margin:0;">
+      <tr><th>Composant</th><th>Symbole</th><th>Impédance complexe</th><th>Remarque</th></tr>
+      <tr><td><strong>Résistance</strong></td><td>$R$</td><td>$$Z_R = R$$</td><td>Réel pur — pas de déphasage</td></tr>
+      <tr><td><strong>Bobine (inducteur)</strong></td><td>$L$</td><td>$$Z_L = j\omega L$$</td><td>Purement imaginaire — tension en avance de 90°</td></tr>
+      <tr><td><strong>Condensateur</strong></td><td>$C$</td><td>$$Z_C = \frac{1}{j\omega C} = \frac{-j}{\omega C}$$</td><td>Purement imaginaire — tension en retard de 90°</td></tr>
+    </table>
+  </div>
+
+  <div class="card card-warning">
+    <strong>Comportement en DC ($\omega = 0$) :</strong>
+    <ul style="margin-top:8px;">
+      <li>Condensateur : $|Z_C| = \frac{1}{\omega C} \to \infty$ — circuit ouvert (laisse pas passer le courant DC)</li>
+      <li>Bobine : $|Z_L| = \omega L \to 0$ — court-circuit (laisse passer le courant DC sans résistance)</li>
+    </ul>
+    Ce comportement tombe souvent en fin d'exercice : "tracez le circuit équivalent en DC".
+  </div>
+
+  <h2>3. Circuits en série et en parallèle</h2>
+  <div class="two-col">
+    <div class="card card-formula">
+      <strong>En série :</strong>
+      <div class="formula-block">$$Z_{\text{tot}} = Z_1 + Z_2 + \cdots + Z_n$$</div>
+    </div>
+    <div class="card card-formula">
+      <strong>En parallèle :</strong>
+      <div class="formula-block">$$\frac{1}{Z_{\text{tot}}} = \frac{1}{Z_1} + \frac{1}{Z_2} + \cdots + \frac{1}{Z_n}$$</div>
+    </div>
+  </div>
+
+  <h2>4. Module et déphasage</h2>
+  <div class="card card-formula">
+    Pour un circuit RL série : $Z = R + j\omega L$
+    <div class="formula-block">$$|Z| = \sqrt{R^2 + (\omega L)^2}$$</div>
+    <div class="formula-block">$$\tan\varphi = \frac{\omega L}{R}$$</div>
+    <p style="margin-top:8px; font-size:14px;">Le courant est en retard par rapport à la tension ($\varphi > 0$).</p>
+  </div>
+
+  <h2>5. Exercice complet — Examen Juin 2023</h2>
+  <div class="card card-exam">
+    <div class="card-exam-label">Examen Juin 2023 — Q1Ad et Q1Bb (5 pts)</div>
+    <p>Lampe 1 : filament solénoïdal = circuit RL série avec $L = 1$ mH et $R = 1\,\Omega$. Lampe 2 : filament linéaire = résistance pure $R = 1\,\Omega$. Générateur AC : $v_{\text{eff}} = 10$ V, pulsation $\omega = 2\pi f$.</p>
+
+    <p><strong>Q1Ad — Impédance de chaque ampoule :</strong></p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">Lampe solénoïdale (RL série) :</div></div>
+    $$Z_{\text{sol}} = R + j\omega L = 1 + j\omega \times 10^{-3} \quad [\Omega]$$
+    <div class="step"><span class="step-num">2</span><div class="step-content">Lampe linéaire (R pur) :</div></div>
+    $$Z_{\text{lin}} = R = 1\,\Omega$$
+
+    <p style="margin-top:14px;"><strong>Q1Ba — Pour quel $\omega$ l'éclairage de la lampe solénoïdale est-il maximum ?</strong></p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">L'éclairage est max quand le courant est max, donc quand $|Z|$ est minimum.</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content">$|Z_{\text{sol}}| = \sqrt{R^2 + \omega^2 L^2}$. Cette expression est minimale quand $\omega \to 0$, c'est-à-dire en DC !</div></div>
+    <p><strong>Réponse :</strong> L'éclairage est maximum pour $\omega = 0$, c'est-à-dire en courant continu (DC).</p>
+
+    <p style="margin-top:14px;"><strong>Q1Bb — Déphasage tension/courant pour chaque ampoule :</strong></p>
+    $$\tan\varphi_{\text{sol}} = \frac{\omega L}{R} = \frac{\omega \times 10^{-3}}{1} = \omega \times 10^{-3}$$
+    $$\tan\varphi_{\text{lin}} = 0 \implies \varphi_{\text{lin}} = 0$$
+  </div>
+
+  <h2>6. Amplitude du courant et puissance</h2>
+  <div class="card card-formula">
+    <strong>Courant efficace :</strong>
+    <div class="formula-block">$$i_{\text{eff}} = \frac{v_{\text{eff}}}{|Z|}$$</div>
+    <strong>Puissance moyenne dissipée :</strong>
+    <div class="formula-block">$$P = v_{\text{eff}} \cdot i_{\text{eff}} \cdot \cos\varphi = i_{\text{eff}}^2 \cdot R$$</div>
+    <p style="font-size:14px; margin-top:8px;">Seule la résistance dissipe de l'énergie. La bobine et le condensateur idéaux ne dissipent rien ($P_L = P_C = 0$).</p>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Section 6</div>
+    <div class="quiz-question">Un circuit RC série comporte $R = 100\,\Omega$ et $C = 10^{-4}$ F. La pulsation est $\omega = 100$ rad/s. Quelle est l'impédance complexe totale ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q6" value="0"> $Z = 100 + 100j\;\Omega$</label>
+      <label class="quiz-option"><input type="radio" name="q6" value="1"> $Z = 100 - 100j\;\Omega$</label>
+      <label class="quiz-option"><input type="radio" name="q6" value="2"> $Z = 200\;\Omega$</label>
+      <label class="quiz-option"><input type="radio" name="q6" value="3"> $Z = 100j\;\Omega$</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz(6)">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-6"></div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Module de l'impédance</div>
+    <div class="quiz-question">Pour le même circuit RC ($R = 100\,\Omega$, $Z_C = -100j\,\Omega$), quel est le module de l'impédance ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q6b" value="0"> $|Z| = 200\,\Omega$</label>
+      <label class="quiz-option"><input type="radio" name="q6b" value="1"> $|Z| = 100\sqrt{2} \approx 141\,\Omega$</label>
+      <label class="quiz-option"><input type="radio" name="q6b" value="2"> $|Z| = 0\,\Omega$</label>
+      <label class="quiz-option"><input type="radio" name="q6b" value="3"> $|Z| = 100\,\Omega$</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz('6b')">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-6b"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-prev" onclick="goTo(4)">— Précédent</button>
+    <button class="btn btn-next" onclick="goTo(6)">Suivant : Constante de temps RC/RL —</button>
+  </div>
+</section>
+
+<!-- ============================
+     SECTION 7 : CONSTANTE DE TEMPS
+============================= -->
+<section class="section" id="sec-6">
+  <div class="section-label">Section 7 sur 8 — Exercice quasi-certain</div>
+  <h1 class="section-title">Constante de temps RC et RL</h1>
+  <p class="section-meta">Dans ~85 % des examens, une question demande soit de calculer la constante de temps, soit de montrer que $RC$ ou $L/R$ a les dimensions d'un temps. C'est 2 à 4 points quasi-certains.</p>
+
+  <div class="card card-exam">
+    <div class="card-exam-label">Questions exactes tombées à l'examen</div>
+    <table class="occur-table">
+      <tr><th>Année</th><th>Formulation exacte</th><th>Points</th></tr>
+      <tr><td>Juin 2023</td><td>Exprimer $R_{\text{eq}}$ et $C_{\text{eq}}$ puis déterminer la constante de temps</td><td><span class="badge badge-blue">6 pts</span></td></tr>
+      <tr><td>Juin 2022</td><td>Démontrer que RC possède bien les dimensions d'une durée</td><td><span class="badge badge-blue">2 pts</span></td></tr>
+      <tr><td>Juin 2013</td><td>Montrer que $L/R$ possède les dimensions d'un temps (analyse dimensionnelle)</td><td><span class="badge badge-blue">4 pts</span></td></tr>
+      <tr><td>Août 2015</td><td>Quelle modification du circuit divise la constante de temps par 3 ?</td><td><span class="badge badge-blue">3 pts</span></td></tr>
+      <tr><td>Août 2014</td><td>Que vaut la constante de temps du circuit ? Quelle modification la multiplie par 2 ?</td><td><span class="badge badge-blue">4 pts</span></td></tr>
+      <tr><td>Juin 2017</td><td>Comment quantifier "longtemps" dans un circuit RL (contexte : interrupteur fermé depuis longtemps)</td><td><span class="badge badge-blue">2 pts</span></td></tr>
+    </table>
+  </div>
+
+  <h2>1. Circuit RC — définition</h2>
+  <div class="card card-formula">
+    <strong>Constante de temps du circuit RC :</strong>
+    <div class="formula-block">$$\tau = R_{\text{eq}} \cdot C_{\text{eq}} \quad [\text{secondes}]$$</div>
+    <p style="margin-top:8px; font-size:14px;">Après $5\tau$, le condensateur est chargé à 99,3 % de sa charge finale.</p>
+  </div>
+
+  <canvas id="rc-canvas" width="440" height="180"></canvas>
+  <p style="font-size:13px; color:var(--text-muted);">Charge du condensateur : à $t = \tau$, il est chargé à 63 % ; à $t = 5\tau$, pratiquement chargé.</p>
+
+  <h2>2. Circuit RL — définition</h2>
+  <div class="card card-formula">
+    <strong>Constante de temps du circuit RL :</strong>
+    <div class="formula-block">$$\tau = \frac{L}{R_{\text{eq}}} \quad [\text{secondes}]$$</div>
+  </div>
+
+  <h2>3. Analyse dimensionnelle — question quasi-certaine</h2>
+  <div class="card card-exam">
+    <div class="card-exam-label">Examen Juin 2013 — Question 2 (4 pts) — tombé aussi en 2022</div>
+    <p><strong>Question :</strong> Montrer que le produit $L/R$ possède les dimensions d'un temps.</p>
+
+    <div class="step"><span class="step-num">1</span><div class="step-content">La loi d'Ohm donne $[R] = V/A = \text{kg}\cdot\text{m}^2\cdot\text{s}^{-3}\cdot\text{A}^{-2}$. Plus simple : $[R] = \Omega$.</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content">La définition de l'auto-inductance : $\xi_{\text{ind}} = -L \, dI/dt$, donc $[L] = [\xi_{\text{ind}}] / [dI/dt] = \text{V} / (\text{A}\cdot\text{s}^{-1}) = \text{V}\cdot\text{s}/\text{A} = \Omega\cdot\text{s}$.</div></div>
+    <div class="step"><span class="step-num">3</span><div class="step-content">Donc :</div></div>
+    $$\left[\frac{L}{R}\right] = \frac{\Omega \cdot \text{s}}{\Omega} = \text{s}$$
+    <p>Le rapport $L/R$ s'exprime bien en secondes.</p>
+  </div>
+
+  <div class="card card-exam">
+    <div class="card-exam-label">Même type — Démontrer que RC a les dimensions d'un temps</div>
+    <div class="step"><span class="step-num">1</span><div class="step-content">$[C] = Q/V = \text{C/V} = \text{F (Farad)} = \text{A}\cdot\text{s}/\text{V} = \text{s}/\Omega$</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content">Donc : $[RC] = \Omega \times \text{s}/\Omega = \text{s}$. C'est bien une durée.</div></div>
+  </div>
+
+  <h2>4. Exercice — Examen Juin 2023 Question 2</h2>
+  <div class="card card-exam">
+    <div class="card-exam-label">Examen Juin 2023 — Q2a (6 pts)</div>
+    <p>Circuit : source $E$, deux résistances $R_1$ et $R_2$ en pont, condensateur $C$. L'équation différentielle gouvernant la charge $Q$ est :</p>
+    $$C_{\text{eq}} E - Q = R_{\text{eq}} C_{\text{eq}} \frac{dQ}{dt}$$
+    <p><strong>Question :</strong> Exprimer $R_{\text{eq}}$ et $C_{\text{eq}}$ en fonction de $R_1$, $R_2$ et $C$.</p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">Vue du condensateur, la source et les résistances forment le circuit de Thévenin. On cherche la résistance équivalente vue par le condensateur (en supprimant la source) : $R_1$ et $R_2$ sont en parallèle :</div></div>
+    $$R_{\text{eq}} = \frac{R_1 R_2}{R_1 + R_2}$$
+    <div class="step"><span class="step-num">2</span><div class="step-content">La capacité équivalente est simplement $C$ (un seul condensateur) :</div></div>
+    $$C_{\text{eq}} = C$$
+    <div class="step"><span class="step-num">3</span><div class="step-content">La constante de temps est donc :</div></div>
+    $$\tau = R_{\text{eq}} C_{\text{eq}} = \frac{R_1 R_2}{R_1 + R_2} \cdot C$$
+  </div>
+
+  <h2>5. Comportement asymptotique — souvent demandé</h2>
+  <div class="highlight-box blue">
+    <strong>Après un temps très long ($t \gg \tau$) :</strong><br>
+    — Condensateur : pleinement chargé, aucun courant ne le traverse. Il se comporte comme un <strong>circuit ouvert</strong>.<br>
+    — Bobine : le courant est constant, la f.é.m. induite est nulle. Elle se comporte comme un <strong>fil (court-circuit)</strong>.
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Section 7</div>
+    <div class="quiz-question">Un circuit RL série a $R = 2\,\Omega$ et $L = 100$ mH. Quelle est la constante de temps ? Et combien de temps faut-il attendre pour que le courant atteigne 99 % de sa valeur finale ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q7" value="0"> $\tau = 50$ ms, il faut attendre $5\tau = 250$ ms</label>
+      <label class="quiz-option"><input type="radio" name="q7" value="1"> $\tau = 200$ ms, il faut attendre $5\tau = 1$ s</label>
+      <label class="quiz-option"><input type="radio" name="q7" value="2"> $\tau = 0{,}2$ s, il faut attendre $5\tau = 1$ s</label>
+      <label class="quiz-option"><input type="radio" name="q7" value="3"> $\tau = 2$ s, il faut attendre $5\tau = 10$ s</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz(7)">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-7"></div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Analyse dimensionnelle</div>
+    <div class="quiz-question">Pour démontrer que $RC$ a les dimensions d'un temps, on utilise :</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q7b" value="0"> La loi de Newton $F = ma$</label>
+      <label class="quiz-option"><input type="radio" name="q7b" value="1"> La définition de $C = Q/V$ et la loi d'Ohm $R = V/I = V \cdot s / Q$</label>
+      <label class="quiz-option"><input type="radio" name="q7b" value="2"> La loi de Faraday $\xi = -d\Phi/dt$</label>
+      <label class="quiz-option"><input type="radio" name="q7b" value="3"> La loi de Coulomb $F = kq_1q_2/r^2$</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz('7b')">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-7b"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-prev" onclick="goTo(5)">— Précédent</button>
+    <button class="btn btn-next" onclick="goTo(7)">Suivant : Champ magnétique B —</button>
+  </div>
+</section>
+
+<!-- ============================
+     SECTION 8 : CHAMP MAGNÉTIQUE
+============================= -->
+<section class="section" id="sec-7">
+  <div class="section-label">Section 8 sur 8 — Points dessin</div>
+  <h1 class="section-title">Direction du champ magnétique B</h1>
+  <p class="section-meta">Présent dans ~70 % des examens. La question consiste à dessiner des flèches. Avec les règles ci-dessous, tu peux gratter 2 à 6 points sans faire un seul calcul.</p>
+
+  <div class="card card-exam">
+    <div class="card-exam-label">Question tombée mot pour mot dans 70% des examens</div>
+    <p>"Indiquer par une flèche la direction du champ magnétique $\vec{B}$ aux points P dans les différentes situations ci-dessous. Si $B = 0$, écrire $B = 0$." — Avec 3 situations : fil infini, deux fils parallèles, rectangle.</p>
+    <p><strong>Années :</strong> Août 2006, Juin 2013, Août 2015, Juin 2017, Août 2016, Juin 2022.</p>
+  </div>
+
+  <h2>1. La règle de la main droite</h2>
+  <div class="highlight-box blue">
+    <strong>Pour un fil parcouru par un courant :</strong> pointe le pouce de la main droite dans le sens du courant. Les doigts s'enroulent dans le sens du champ magnétique $\vec{B}$ autour du fil.
+  </div>
+
+  <h2>2. Les 3 situations récurrentes</h2>
+
+  <h3>Situation A — Fil infini parcouru par un courant sortant de la feuille</h3>
+  <canvas id="bfield-canvas-a" width="280" height="180"></canvas>
+  <div class="highlight-box green" style="margin-top:8px;">
+    Le courant sort vers vous (cercle avec point). Le champ $\vec{B}$ tourne dans le sens anti-horlogique autour du fil. En un point P à droite du fil : $\vec{B}$ est dirigé vers le haut. En un point P en haut : $\vec{B}$ est dirigé vers la gauche.
+  </div>
+
+  <h3>Situation B — Deux fils parallèles, courants de même sens</h3>
+  <canvas id="bfield-canvas-b" width="280" height="180"></canvas>
+  <div class="highlight-box green" style="margin-top:8px;">
+    Les deux fils créent des champs qui se <strong>renforcent</strong> entre les fils si les courants sont de sens contraires, ou qui s'annulent en un point équidistant si les courants sont de même sens. Pour deux courants de même sens : $B = 0$ au point P équidistant (les contributions s'annulent).
+  </div>
+
+  <div class="card card-warning">
+    <strong>Piège fréquent :</strong> L'examen demande parfois des courants de même sens ET des courants de sens opposés. Vérifie bien l'énoncé.
+    <ul style="margin-top:8px;">
+      <li>Courants de <strong>même sens</strong> : $B = 0$ au milieu (se compensent)</li>
+      <li>Courants de <strong>sens opposés</strong> : $B \neq 0$ au milieu (se renforcent)</li>
+    </ul>
+  </div>
+
+  <h3>Situation C — Rectangle de fil parcouru par un courant</h3>
+  <canvas id="bfield-canvas-c" width="280" height="180"></canvas>
+  <div class="highlight-box green" style="margin-top:8px;">
+    À l'intérieur d'un rectangle (ou boucle rectangulaire), le champ de chaque segment contribue dans la même direction. Le champ résultant est perpendiculaire au plan de la boucle et dirigé vers vous (sens anti-horlogique) ou loin de vous (sens horlogique).
+  </div>
+
+  <h2>3. La force de Lorentz — question bonus récurrente</h2>
+  <div class="card card-formula">
+    <strong>Force exercée sur une charge en mouvement dans un champ magnétique :</strong>
+    <div class="formula-block">$$\vec{F} = q\vec{v} \times \vec{B}$$</div>
+    <p style="font-size:14px; margin-top:8px;">
+    — Si $\vec{v}$ est parallèle à $\vec{B}$ : $\vec{F} = \vec{0}$ (pas de force)<br>
+    — Si $\vec{v}$ est perpendiculaire à $\vec{B}$ : $|\vec{F}| = qvB$ (force maximale, perpendiculaire aux deux)<br>
+    — Une charge immobile ($v = 0$) ne subit aucune force magnétique.
+    </p>
+  </div>
+
+  <div class="card card-exam">
+    <div class="card-exam-label">Tombé dans ~50% des examens — Juin 2015, 2017, 2019...</div>
+    <p>"Une charge électrique $q$, positive, immobile entre les pôles d'un aimant produisant un champ magnétique d'intensité $B$ au point P. Y a-t-il une force ?"</p>
+    <div class="highlight-box blue">
+      Réponse : <strong>Non, aucune force magnétique</strong>, car la force de Lorentz vaut $\vec{F} = q\vec{v} \times \vec{B}$ et la charge est immobile ($\vec{v} = \vec{0}$), donc $\vec{F} = \vec{0}$.
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Section 8</div>
+    <div class="quiz-question">Deux fils parallèles sont parcourus par des courants de <strong>même intensité et de même sens</strong>. Un point P se trouve exactement à mi-distance entre les deux fils. Quelle est la direction du champ magnétique en P ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q8" value="0"> Le champ est perpendiculaire aux deux fils, dans le plan de la feuille.</label>
+      <label class="quiz-option"><input type="radio" name="q8" value="1"> Le champ est nul en P car les contributions des deux fils se compensent.</label>
+      <label class="quiz-option"><input type="radio" name="q8" value="2"> Le champ est deux fois plus intense qu'en présence d'un seul fil.</label>
+      <label class="quiz-option"><input type="radio" name="q8" value="3"> Le champ est perpendiculaire au plan de la feuille.</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz(8)">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-8"></div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Force de Lorentz</div>
+    <div class="quiz-question">Un électron se déplace parallèlement à un champ magnétique. Quelle force magnétique subit-il ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q8b" value="0"> Une force perpendiculaire à sa vitesse et au champ.</label>
+      <label class="quiz-option"><input type="radio" name="q8b" value="1"> Une force nulle, car $\vec{v}$ est parallèle à $\vec{B}$ et le produit vectoriel est nul.</label>
+      <label class="quiz-option"><input type="radio" name="q8b" value="2"> Une force dans le sens du champ magnétique.</label>
+      <label class="quiz-option"><input type="radio" name="q8b" value="3"> Une force qui freine l'électron.</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz('8b')">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-8b"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-prev" onclick="goTo(6)">— Précédent</button>
+    <button class="btn btn-next" onclick="finishCourse()">Terminer le cours</button>
+  </div>
+</section>
+
+<!-- DONE BANNER -->
+<div id="done-banner">
+  <h1>Mission accomplie.</h1>
+  <p>Tu as couvert les 8 thèmes qui représentent ~70-80 % des points "grattables" en 2 jours.</p>
+  <br>
+  <div class="card" style="max-width:500px; margin:0 auto; text-align:left;">
+    <h3 style="margin-top:0;">Récapitulatif — points que tu peux viser</h3>
+    <table class="occur-table">
+      <tr><th>Thème</th><th>Points estimés</th></tr>
+      <tr><td>1. Travail d'une force (définition)</td><td><span class="badge badge-green">2-4 pts</span></td></tr>
+      <tr><td>2. Théorème énergie cinétique</td><td><span class="badge badge-green">2-4 pts</span></td></tr>
+      <tr><td>3. Conservation énergie (exercices)</td><td><span class="badge badge-green">2-4 pts</span></td></tr>
+      <tr><td>4. Force conservative</td><td><span class="badge badge-green">2-3 pts</span></td></tr>
+      <tr><td>5. Phaseur</td><td><span class="badge badge-green">2-4 pts</span></td></tr>
+      <tr><td>6. Impédance Z</td><td><span class="badge badge-green">2-5 pts</span></td></tr>
+      <tr><td>7. Constante de temps RC/RL</td><td><span class="badge badge-green">2-4 pts</span></td></tr>
+      <tr><td>8. Champ magnétique B</td><td><span class="badge badge-green">2-4 pts</span></td></tr>
+      <tr><td><strong>Total estimé</strong></td><td><span class="badge badge-blue">16-32 pts</span></td></tr>
+    </table>
+    <p style="margin-top:12px; font-size:13px; color:var(--text-muted);">Sur un examen de ~100-120 pts, 5,5/20 correspond à ~27-33 pts. Tu es dans la fenêtre de faisabilité.</p>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ==================== NAVIGATION ====================
+let currentSection = 0;
+const totalSections = 8;
+const visited = new Set([0]);
+
+function goTo(idx) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + idx).classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach((item, i) => {
+    item.classList.remove('active');
+    if (i === idx) item.classList.add('active');
+    if (visited.has(i) && i !== idx) item.classList.add('done');
+    else if (i !== idx) item.classList.remove('done');
+  });
+
+  currentSection = idx;
+  visited.add(idx);
+  updateProgress();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('done-banner').style.display = 'none';
+}
+
+function finishCourse() {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('done-banner').style.display = 'block';
+  for (let i = 0; i < totalSections; i++) visited.add(i);
+  updateProgress();
+  document.querySelectorAll('.nav-item').forEach(item => item.classList.add('done'));
+}
+
+function updateProgress() {
+  const pct = Math.round((visited.size / totalSections) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = visited.size + ' / ' + totalSections + ' sections';
+}
+
+// ==================== QUIZ ====================
+const quizData = {
+  1:   { correct: '1', explanation: 'Correct ! La balle tombe de 2 m, force et déplacement sont dans le même sens. $W = F \\cdot d \\cdot \\cos(0°) = 5 \\times 2 = 10$ J.' },
+  '1b':{ correct: '2', explanation: 'Correct ! $W = F \\cdot d \\cdot \\cos\\theta = 10 \\times 4 \\times \\cos(60°) = 40 \\times 0{,}5 = 20$ J.' },
+  2:   { correct: '1', explanation: 'Correct ! $W = \\Delta K = \\frac{1}{2} \\times 1000 \\times 20^2 - 0 = 200\\,000$ J = 200 kJ.' },
+  '2b':{ correct: '1', explanation: 'Correct ! Le théorème de l\'énergie cinétique s\'applique à toute force, conservative ou non. C\'est justement son avantage sur le principe de conservation de l\'énergie.' },
+  3:   { correct: '2', explanation: 'Correct ! Conservation : $mgh = \\frac{1}{2}mv^2$, donc $v = \\sqrt{2gh} = \\sqrt{2 \\times 10 \\times 5} = \\sqrt{100} = 10$ m/s.' },
+  4:   { correct: '1', explanation: 'Correct ! La définition exacte : une force est conservative si et seulement si son travail sur tout contour fermé est nul : $\\oint \\vec{F} \\cdot d\\vec{l} = 0$.' },
+  '4b':{ correct: '2', explanation: 'Correct ! La force magnétique est toujours perpendiculaire à la vitesse ($\\vec{F} \\perp \\vec{v}$), donc son travail est toujours nul. C\'est pourquoi on ne parle pas d\'énergie potentielle magnétique.' },
+  5:   { correct: '1', explanation: 'Correct ! Le phaseur de $i(t) = 3\\cos(\\omega t - \\pi/3)$ est $\\hat{I} = 3\\,e^{-j\\pi/3}$. L\'amplitude $i_0 = 3$ et la phase $\\varphi = -\\pi/3$.' },
+  6:   { correct: '1', explanation: 'Correct ! $Z_C = \\frac{1}{j\\omega C} = \\frac{1}{j \\times 100 \\times 10^{-4}} = \\frac{1}{0{,}01j} = \\frac{-j}{0{,}01} = -100j\\,\\Omega$. Donc $Z = R + Z_C = 100 - 100j\\,\\Omega$.' },
+  '6b':{ correct: '1', explanation: 'Correct ! $|Z| = \\sqrt{100^2 + 100^2} = \\sqrt{20000} = 100\\sqrt{2} \\approx 141\\,\\Omega$.' },
+  7:   { correct: '0', explanation: 'Correct ! $\\tau = L/R = 0{,}1/2 = 0{,}05$ s $= 50$ ms. Pour atteindre 99 %, il faut $5\\tau = 250$ ms. (Tiré directement de l\'examen juin 2013 !)' },
+  '7b':{ correct: '1', explanation: 'Correct ! On utilise $C = Q/V$ (définition du condensateur) et la loi d\'Ohm $V = RI$, soit $[R] = V/I = V \\cdot s / C$. Alors $[RC] = (V \\cdot s / C) \\times (C/V) = s$.' },
+  8:   { correct: '1', explanation: 'Correct ! Les deux fils créent des champs de même intensité mais de sens opposés au point P situé à mi-distance. Ils se compensent exactement : $B = 0$. (Question tombée mot pour mot en juin 2017 !)' },
+  '8b':{ correct: '1', explanation: 'Correct ! $\\vec{F} = q\\vec{v} \\times \\vec{B}$. Si $\\vec{v}$ est parallèle à $\\vec{B}$, alors $\\vec{v} \\times \\vec{B} = \\vec{0}$, donc $\\vec{F} = \\vec{0}$.' }
+};
+
+function checkQuiz(qid) {
+  const selected = document.querySelector(`input[name="q${qid}"]:checked`);
+  const fb = document.getElementById(`qfb-${qid}`);
+  if (!selected) return;
+
+  const data = quizData[qid];
+  const isCorrect = selected.value === data.correct;
+
+  document.querySelectorAll(`input[name="q${qid}"]`).forEach(inp => {
+    const opt = inp.closest('.quiz-option');
+    if (inp.value === data.correct) opt.classList.add('correct');
+    else if (inp.checked) opt.classList.add('wrong');
+    inp.disabled = true;
+  });
+
+  fb.className = 'quiz-feedback ' + (isCorrect ? 'correct' : 'wrong');
+  fb.innerHTML = (isCorrect ? '1. Bonne réponse. ' : '0. Mauvaise réponse. ') + data.explanation;
+  fb.style.display = 'block';
+
+  // Disable submit
+  const btn = fb.previousElementSibling;
+  if (btn && btn.tagName === 'BUTTON') btn.disabled = true;
+
+  // Re-render KaTeX in feedback
+  setTimeout(() => {
+    renderMathInElement(fb, {
+      delimiters: [{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],
+      throwOnError: false
+    });
+  }, 50);
+}
+
+// ==================== CANVAS DRAWINGS ====================
+document.addEventListener('DOMContentLoaded', () => {
+  drawPendulum();
+  drawFresnel();
+  drawRC();
+  drawBFieldA();
+  drawBFieldB();
+  drawBFieldC();
+});
+
+function drawPendulum() {
+  const canvas = document.getElementById('pendulum-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, W, H);
+
+  // Fixed point
+  const px = 80, py = 30;
+  ctx.fillStyle = '#1e3a5f';
+  ctx.fillRect(40, 20, 80, 15);
+
+  // Initial position (horizontal)
+  ctx.strokeStyle = '#3b82f6';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + 160, py); ctx.stroke();
+  ctx.beginPath(); ctx.arc(px + 160, py, 12, 0, Math.PI*2);
+  ctx.fillStyle = '#3b82f6'; ctx.fill();
+
+  // Vertical cord
+  ctx.strokeStyle = '#94a3b8';
+  ctx.setLineDash([5, 4]);
+  ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, py + 160); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Arc (swing path)
+  ctx.strokeStyle = '#dbeafe';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(px, py, 160, 0, Math.PI/2);
+  ctx.stroke();
+
+  // Bottom position
+  ctx.beginPath(); ctx.arc(px, py + 160, 12, 0, Math.PI*2);
+  ctx.fillStyle = '#1d4ed8'; ctx.fill();
+
+  // Labels
+  ctx.fillStyle = '#1e3a5f';
+  ctx.font = '13px "DM Sans", sans-serif';
+  ctx.fillText('L', px + 80, py - 8);
+  ctx.fillText('h = L', px + 4, py + 85);
+  ctx.fillText('v = 0', px + 170, py - 5);
+  ctx.fillText('v = √(2gL)', px + 4, py + 178);
+}
+
+function drawFresnel() {
+  const canvas = document.getElementById('fresnel-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, W, H);
+
+  const cx = 60, cy = 140;
+  // Axes
+  ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(cx, 10); ctx.lineTo(cx, H-10); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(10, cy); ctx.lineTo(W-10, cy); ctx.stroke();
+
+  ctx.fillStyle = '#94a3b8'; ctx.font = '12px "JetBrains Mono"';
+  ctx.fillText('Im', cx+4, 16);
+  ctx.fillText('Re', W-26, cy-4);
+
+  // Angle arc
+  ctx.strokeStyle = '#bfdbfe'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(cx, cy, 40, -Math.PI/4, 0); ctx.stroke();
+  ctx.fillStyle = '#3b82f6'; ctx.font = '11px "JetBrains Mono"';
+  ctx.fillText('π/4', cx+44, cy-14);
+
+  // Vector
+  const ang = Math.PI/4, len = 100;
+  const ex = cx + len*Math.cos(ang), ey = cy - len*Math.sin(ang);
+  ctx.strokeStyle = '#1d4ed8'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(ex, ey); ctx.stroke();
+
+  // Arrowhead
+  ctx.fillStyle = '#1d4ed8';
+  ctx.beginPath();
+  ctx.moveTo(ex, ey);
+  ctx.lineTo(ex - 10*Math.cos(ang) + 5*Math.sin(ang), ey + 10*Math.sin(ang) + 5*Math.cos(ang));
+  ctx.lineTo(ex - 10*Math.cos(ang) - 5*Math.sin(ang), ey + 10*Math.sin(ang) - 5*Math.cos(ang));
+  ctx.closePath(); ctx.fill();
+
+  // Label
+  ctx.fillStyle = '#1d4ed8'; ctx.font = '13px "DM Sans"';
+  ctx.fillText('|V̂| = 6', ex+6, ey-4);
+
+  // Projections
+  ctx.strokeStyle = '#dbeafe'; ctx.lineWidth = 1; ctx.setLineDash([3,3]);
+  ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(ex, cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(ex, ey); ctx.lineTo(cx, ey); ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = '#64748b'; ctx.font = '11px "JetBrains Mono"';
+  ctx.fillText('3√2', ex-24, cy+14);
+  ctx.fillText('3√2', cx-40, ey+4);
+}
+
+function drawRC() {
+  const canvas = document.getElementById('rc-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, W, H);
+
+  const ml = 50, mr = 20, mt = 20, mb = 40;
+  const pw = W - ml - mr, ph = H - mt - mb;
+
+  // Axes
+  ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(ml, mt); ctx.lineTo(ml, mt+ph); ctx.lineTo(ml+pw, mt+ph); ctx.stroke();
+
+  ctx.fillStyle = '#64748b'; ctx.font = '11px "JetBrains Mono"';
+  ctx.fillText('V(t)/V∞', 2, mt+4);
+  ctx.fillText('t', ml+pw+4, mt+ph+2);
+
+  // Ticks and labels
+  const ticks = [1, 2, 3, 4, 5];
+  ticks.forEach(t => {
+    const x = ml + (t/5)*pw;
+    ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, mt); ctx.lineTo(x, mt+ph); ctx.stroke();
+    ctx.fillStyle = '#94a3b8'; ctx.font = '10px "JetBrains Mono"';
+    ctx.fillText(t+'τ', x-6, mt+ph+14);
+  });
+
+  const yTicks = [0.2, 0.4, 0.6, 0.63, 0.8, 1.0];
+  yTicks.forEach(v => {
+    const y = mt + ph - v*ph;
+    ctx.strokeStyle = v === 0.63 ? '#bfdbfe' : '#f1f5f9';
+    ctx.lineWidth = v === 0.63 ? 1.5 : 1;
+    ctx.setLineDash(v === 0.63 ? [4,3] : []);
+    ctx.beginPath(); ctx.moveTo(ml, y); ctx.lineTo(ml+pw, y); ctx.stroke();
+    ctx.setLineDash([]);
+    if (v === 0.63 || v === 1.0) {
+      ctx.fillStyle = v === 0.63 ? '#3b82f6' : '#94a3b8';
+      ctx.font = '10px "JetBrains Mono"';
+      ctx.fillText(v, ml-36, y+4);
+    }
+  });
+
+  // Charge curve
+  ctx.strokeStyle = '#1d4ed8'; ctx.lineWidth = 2.5; ctx.setLineDash([]);
+  ctx.beginPath();
+  for (let i = 0; i <= pw; i++) {
+    const t = (i/pw)*5;
+    const v = 1 - Math.exp(-t);
+    const x = ml + i, y = mt + ph - v*ph;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // τ marker
+  const tau_x = ml + (1/5)*pw;
+  const tau_y = mt + ph - 0.632*ph;
+  ctx.fillStyle = '#1d4ed8'; ctx.beginPath(); ctx.arc(tau_x, tau_y, 4, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#1d4ed8'; ctx.font = '11px "DM Sans"';
+  ctx.fillText('63%', tau_x+6, tau_y-4);
+}
+
+function drawBFieldA() {
+  const canvas = document.getElementById('bfield-canvas-a');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  drawBFieldWire(ctx, canvas.width, canvas.height, 'same');
+}
+
+function drawBFieldB() {
+  const canvas = document.getElementById('bfield-canvas-b');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  drawTwoWires(ctx, canvas.width, canvas.height, true);
+}
+
+function drawBFieldC() {
+  const canvas = document.getElementById('bfield-canvas-c');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  drawLoop(ctx, canvas.width, canvas.height);
+}
+
+function drawBFieldWire(ctx, W, H) {
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+  const cx = W/2, cy = H/2;
+
+  // Field circles (light blue)
+  [30, 55, 80].forEach(r => {
+    ctx.strokeStyle = '#bfdbfe';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+  });
+
+  // Wire (current out)
+  ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(cx, cy, 12, 0, Math.PI*2); ctx.stroke();
+  // dot
+  ctx.fillStyle = '#1e3a5f';
+  ctx.beginPath(); ctx.arc(cx, cy, 4, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#1e3a5f'; ctx.font = '10px "DM Sans"'; ctx.fillText('I', cx-4, cy+18);
+
+  // Field arrows (anti-clockwise for current out)
+  const pts = [{x:cx+55,y:cy},{x:cx,y:cy-55},{x:cx-55,y:cy},{x:cx,y:cy+55}];
+  const dirs = [{dx:0,dy:-1},{dx:-1,dy:0},{dx:0,dy:1},{dx:1,dy:0}];
+  pts.forEach((p, i) => {
+    drawArrow(ctx, p.x, p.y, dirs[i].dx, dirs[i].dy, 16, '#1d4ed8');
+  });
+
+  // P label
+  ctx.fillStyle = '#dc2626'; ctx.font = 'bold 13px "DM Sans"';
+  ctx.fillText('P', cx+58, cy-4);
+
+  ctx.fillStyle = '#1e293b'; ctx.font = '12px "DM Sans"';
+  ctx.fillText('B en P : vers le haut', 20, H-10);
+}
+
+function drawTwoWires(ctx, W, H, sameDirection) {
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+  const cy = H/2, cx1 = W/3, cx2 = 2*W/3, pmid = W/2;
+
+  // Wires
+  [cx1, cx2].forEach((x, i) => {
+    ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(x, cy, 12, 0, Math.PI*2); ctx.stroke();
+    // Same direction: both out (dot)
+    ctx.fillStyle = '#1e3a5f';
+    ctx.beginPath(); ctx.arc(x, cy, 4, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#1e293b'; ctx.font = '10px "DM Sans"';
+    ctx.fillText('I', x-4, cy+18);
+  });
+
+  // Point P at midpoint
+  ctx.fillStyle = '#dc2626';
+  ctx.beginPath(); ctx.arc(pmid, cy, 5, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#dc2626'; ctx.font = 'bold 13px "DM Sans"';
+  ctx.fillText('P', pmid+7, cy-4);
+
+  // Same sense → B=0
+  ctx.fillStyle = '#16a34a'; ctx.font = 'bold 14px "DM Sans"';
+  ctx.fillText('B = 0 en P', pmid-32, cy-28);
+  ctx.fillStyle = '#94a3b8'; ctx.font = '11px "DM Sans"';
+  ctx.fillText('(courants de même sens :', 25, H-24);
+  ctx.fillText('champs opposés s\'annulent)', 20, H-10);
+}
+
+function drawLoop(ctx, W, H) {
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+  const lx = 60, ly = 40, lw = 160, lh = 100;
+
+  // Rectangle loop
+  ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 2;
+  ctx.strokeRect(lx, ly, lw, lh);
+
+  // Arrows on sides (current direction: anti-clockwise)
+  const arrs = [
+    {x:lx+lw/2, y:ly, dx:-1, dy:0},
+    {x:lx, y:ly+lh/2, dx:0, dy:1},
+    {x:lx+lw/2, y:ly+lh, dx:1, dy:0},
+    {x:lx+lw, y:ly+lh/2, dx:0, dy:-1}
+  ];
+  arrs.forEach(a => drawArrow(ctx, a.x, a.y, a.dx, a.dy, 12, '#1e3a5f'));
+
+  // P inside
+  const px = lx+lw/2, py = ly+lh/2;
+  ctx.fillStyle = '#dc2626';
+  ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#dc2626'; ctx.font = 'bold 13px "DM Sans"'; ctx.fillText('P', px+8, py+4);
+
+  // B direction arrow (into page for clockwise, out for anti-clockwise)
+  ctx.fillStyle = '#1d4ed8'; ctx.font = 'bold 11px "JetBrains Mono"';
+  ctx.fillText('B ⊙', px-14, py-12);
+  ctx.fillStyle = '#94a3b8'; ctx.font = '11px "DM Sans"';
+  ctx.fillText('(vers vous)', lx, H-8);
+}
+
+function drawArrow(ctx, x, y, dx, dy, len, color) {
+  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2;
+  const ex = x + dx*len, ey = y + dy*len;
+  ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(ex, ey); ctx.stroke();
+  const ang = Math.atan2(dy, dx);
+  ctx.beginPath();
+  ctx.moveTo(ex, ey);
+  ctx.lineTo(ex - 8*Math.cos(ang-0.4), ey - 8*Math.sin(ang-0.4));
+  ctx.lineTo(ex - 8*Math.cos(ang+0.4), ey - 8*Math.sin(ang+0.4));
+  ctx.closePath(); ctx.fill();
+}
+</script>
+</body>
+</html>

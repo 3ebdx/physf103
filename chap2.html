@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Physique — Couche 2 — Méthodes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
+<style>
+:root {
+  --bg:#EFF6FF;
+  --sidebar-bg:#1e3a5f;
+  --sidebar-text:#c8dff7;
+  --sidebar-active:#60a5fa;
+  --sidebar-hover:#2d5282;
+  --accent:#1d4ed8;
+  --accent-light:#dbeafe;
+  --accent-mid:#3b82f6;
+  --green:#16a34a;
+  --green-light:#dcfce7;
+  --red:#dc2626;
+  --red-light:#fee2e2;
+  --orange:#d97706;
+  --orange-light:#fef3c7;
+  --text:#1e293b;
+  --text-muted:#64748b;
+  --border:#bfdbfe;
+  --card:#ffffff;
+  --sidebar-width:268px;
+  --font-body:'DM Sans',sans-serif;
+  --font-serif:'Source Serif 4',serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:15.5px;line-height:1.7;display:flex;min-height:100vh;}
+
+#sidebar{width:var(--sidebar-width);background:var(--sidebar-bg);position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:100;display:flex;flex-direction:column;}
+#sidebar-header{padding:24px 20px 16px;border-bottom:1px solid rgba(255,255,255,0.08);}
+#sidebar-header h2{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--sidebar-active);margin-bottom:4px;}
+#sidebar-header p{font-size:12px;color:rgba(200,223,247,.6);line-height:1.4;}
+#progress-bar-wrap{padding:14px 20px 10px;border-bottom:1px solid rgba(255,255,255,.06);}
+#progress-bar-wrap span{font-size:11px;color:rgba(200,223,247,.5);display:block;margin-bottom:6px;font-family:var(--font-mono);}
+#progress-bar{height:4px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;}
+#progress-fill{height:100%;background:var(--sidebar-active);border-radius:2px;width:0%;transition:width .5s ease;}
+#sidebar nav{padding:10px 0;flex:1;}
+.nav-item{display:flex;align-items:flex-start;gap:10px;padding:9px 20px;cursor:pointer;color:var(--sidebar-text);font-size:13px;line-height:1.4;transition:background .15s,color .15s;border-left:3px solid transparent;}
+.nav-item:hover{background:var(--sidebar-hover);}
+.nav-item.active{background:rgba(96,165,250,.12);color:var(--sidebar-active);border-left-color:var(--sidebar-active);font-weight:600;}
+.nav-item.done{color:rgba(200,223,247,.45);}
+.nav-item.done .nav-num{color:var(--green);}
+.nav-num{font-family:var(--font-mono);font-size:11px;font-weight:600;color:rgba(200,223,247,.4);min-width:20px;padding-top:1px;}
+.nav-freq{font-family:var(--font-mono);font-size:9px;padding:1px 5px;border-radius:3px;margin-left:auto;white-space:nowrap;}
+.freq-high{background:rgba(220,38,38,.3);color:#fca5a5;}
+.freq-med{background:rgba(217,119,6,.3);color:#fcd34d;}
+
+#main{margin-left:var(--sidebar-width);flex:1;max-width:820px;padding:48px 48px 80px;}
+.section{display:none;animation:fadeIn .25s ease;}
+.section.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.section-label{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-mid);margin-bottom:8px;}
+h1.section-title{font-family:var(--font-serif);font-size:30px;font-weight:600;color:var(--text);line-height:1.25;margin-bottom:6px;}
+.section-meta{font-size:13px;color:var(--text-muted);margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+h2{font-family:var(--font-serif);font-size:19px;font-weight:600;color:var(--text);margin:36px 0 12px;}
+h3{font-size:14px;font-weight:600;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin:24px 0 10px;font-family:var(--font-mono);}
+p{margin-bottom:14px;}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px 24px;margin:16px 0;}
+.card-formula{background:var(--accent-light);border-color:#93c5fd;border-left:4px solid var(--accent);}
+.card-exam{background:#fffbeb;border-color:#fde68a;border-left:4px solid var(--orange);}
+.card-exam-label{font-family:var(--font-mono);font-size:10px;font-weight:600;color:var(--orange);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.card-example{background:#f0fdf4;border-color:#bbf7d0;border-left:4px solid var(--green);}
+.card-example-label{font-family:var(--font-mono);font-size:10px;font-weight:600;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.card-warning{background:#fff7ed;border-color:#fed7aa;border-left:4px solid var(--orange);}
+.card-method{background:#f8faff;border-color:#c7d2fe;border-left:4px solid #6366f1;}
+.card-method-label{font-family:var(--font-mono);font-size:10px;font-weight:600;color:#6366f1;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+
+.formula-block{font-size:16px;margin:10px 0;overflow-x:auto;}
+.step{display:flex;gap:12px;margin:10px 0;align-items:flex-start;}
+.step-num{font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-light);padding:2px 7px;border-radius:4px;min-width:28px;text-align:center;margin-top:2px;}
+.step-content{flex:1;}
+
+.occur-table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0;}
+.occur-table th{background:var(--accent-light);font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--accent);padding:7px 12px;text-align:left;letter-spacing:.06em;}
+.occur-table td{padding:7px 12px;border-bottom:1px solid #e2e8f0;vertical-align:top;}
+.occur-table tr:last-child td{border-bottom:none;}
+.occur-table tr:nth-child(even) td{background:#f8faff;}
+.badge{display:inline-block;font-family:var(--font-mono);font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px;}
+.badge-green{background:var(--green-light);color:var(--green);}
+.badge-orange{background:var(--orange-light);color:var(--orange);}
+.badge-blue{background:var(--accent-light);color:var(--accent);}
+
+.quiz-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin:32px 0 24px;}
+.quiz-header{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.12em;color:var(--accent);text-transform:uppercase;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.quiz-question{font-size:15px;font-weight:500;margin-bottom:14px;line-height:1.6;}
+.quiz-options{display:flex;flex-direction:column;gap:8px;}
+.quiz-option{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s;font-size:14px;background:#fafcff;}
+.quiz-option:hover{border-color:var(--accent-mid);background:var(--accent-light);}
+.quiz-option input[type="radio"]{margin-top:2px;accent-color:var(--accent);}
+.quiz-option.correct{border-color:var(--green);background:var(--green-light);}
+.quiz-option.wrong{border-color:var(--red);background:var(--red-light);}
+.quiz-submit{margin-top:14px;padding:9px 22px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;}
+.quiz-submit:hover{background:#1e40af;}
+.quiz-submit:disabled{background:#94a3b8;cursor:default;}
+.quiz-feedback{margin-top:12px;padding:12px 16px;border-radius:8px;font-size:14px;display:none;line-height:1.6;}
+.quiz-feedback.correct{background:var(--green-light);color:#14532d;}
+.quiz-feedback.wrong{background:var(--red-light);color:#7f1d1d;}
+
+.nav-buttons{display:flex;justify-content:space-between;margin-top:48px;padding-top:24px;border-top:1px solid var(--border);}
+.btn{padding:10px 22px;border-radius:8px;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;border:none;}
+.btn-prev{background:var(--card);border:1.5px solid var(--border);color:var(--text-muted);}
+.btn-prev:hover{border-color:var(--accent-mid);color:var(--accent);}
+.btn-next{background:var(--accent);color:#fff;}
+.btn-next:hover{background:#1e40af;}
+
+canvas{display:block;}
+.canvas-wrap{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:16px 0;background:#fff;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.highlight-box{border-radius:8px;padding:14px 18px;margin:14px 0;font-size:14px;}
+.highlight-box.blue{background:var(--accent-light);border-left:3px solid var(--accent);}
+.highlight-box.green{background:var(--green-light);border-left:3px solid var(--green);}
+.highlight-box.orange{background:var(--orange-light);border-left:3px solid var(--orange);}
+ul,ol{margin:0 0 14px 24px;}
+li{margin-bottom:5px;}
+
+/* Interactive circuit */
+.circuit-block{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;margin:16px 0;}
+.eq-system{background:#f8faff;border:1px solid #c7d2fe;border-radius:8px;padding:16px 20px;margin:12px 0;font-size:14px;}
+.eq-system .eq-line{margin:5px 0;}
+
+#done-banner{display:none;text-align:center;padding:60px 40px;}
+#done-banner h1{font-family:var(--font-serif);font-size:36px;color:var(--green);margin-bottom:16px;}
+#done-banner p{color:var(--text-muted);font-size:16px;}
+</style>
+</head>
+<body>
+
+<aside id="sidebar">
+  <div id="sidebar-header">
+    <h2>Physique — Couche 2</h2>
+    <p>Méthodes pour aller chercher le 6,5/20</p>
+  </div>
+  <div id="progress-bar-wrap">
+    <span id="progress-text">0 / 6 sections</span>
+    <div id="progress-bar"><div id="progress-fill"></div></div>
+  </div>
+  <nav id="nav">
+    <div class="nav-item active" onclick="goTo(0)">
+      <span class="nav-num">1.</span>
+      <span>Lois de Kirchhoff</span>
+      <span class="nav-freq freq-high">75%</span>
+    </div>
+    <div class="nav-item" onclick="goTo(1)">
+      <span class="nav-num">2.</span>
+      <span>Théorème de Thévenin</span>
+      <span class="nav-freq freq-high">70%</span>
+    </div>
+    <div class="nav-item" onclick="goTo(2)">
+      <span class="nav-num">3.</span>
+      <span>Déphasage et puissance AC</span>
+      <span class="nav-freq freq-high">90%</span>
+    </div>
+    <div class="nav-item" onclick="goTo(3)">
+      <span class="nav-num">4.</span>
+      <span>Transformateur</span>
+      <span class="nav-freq freq-med">65%</span>
+    </div>
+    <div class="nav-item" onclick="goTo(4)">
+      <span class="nav-num">5.</span>
+      <span>Loi de Faraday-Lenz</span>
+      <span class="nav-freq freq-med">60%</span>
+    </div>
+    <div class="nav-item" onclick="goTo(5)">
+      <span class="nav-num">6.</span>
+      <span>Mouvement circulaire</span>
+      <span class="nav-freq freq-med">55%</span>
+    </div>
+  </nav>
+</aside>
+
+<main id="main">
+
+<!-- ============================
+     SECTION 1 : KIRCHHOFF
+============================= -->
+<section class="section active" id="sec-0">
+  <div class="section-label">Section 1 sur 6 — Méthode fondamentale</div>
+  <h1 class="section-title">Lois de Kirchhoff</h1>
+  <p class="section-meta">Dans ~75 % des examens. Les équations de Kirchhoff sont la base de tout exercice sur les circuits à résistances. Maîtriser la méthode en 4 étapes te donne accès aux premières sous-questions de presque tous les exercices électriques.</p>
+
+  <div class="card card-exam">
+    <div class="card-exam-label">Apparitions dans les examens</div>
+    <table class="occur-table">
+      <tr><th>Année</th><th>Ce qui était demandé</th><th>Points</th></tr>
+      <tr><td>Juin 2024</td><td>Écrire les lois des nœuds pour 4 nœuds + les équations de maille pour 4 mailles</td><td><span class="badge badge-blue">8 pts</span></td></tr>
+      <tr><td>Juin 2015</td><td>Utiliser Kirchhoff pour calculer les courants I1 à I5 dans un circuit complexe</td><td><span class="badge badge-blue">12 pts</span></td></tr>
+      <tr><td>Juin 2012</td><td>Résistances équivalentes + courant dans chaque résistance</td><td><span class="badge badge-blue">15 pts</span></td></tr>
+      <tr><td>Août 2006</td><td>Courant débité par une pile + différence de potentiel</td><td><span class="badge badge-blue">10 pts</span></td></tr>
+      <tr><td>Juin 2023</td><td>Démontrer $R_{eq}$ et $C_{eq}$ via Kirchhoff sur un circuit RC</td><td><span class="badge badge-blue">6 pts</span></td></tr>
+    </table>
+  </div>
+
+  <h2>1. Les deux lois</h2>
+
+  <div class="two-col">
+    <div class="card card-formula">
+      <strong>Loi des nœuds</strong><br>
+      La somme algébrique des courants arrivant en un nœud est nulle :
+      <div class="formula-block">$$\sum_k I_k = 0$$</div>
+      <p style="font-size:13px;margin-bottom:0;">Ce qui entre = ce qui sort.</p>
+    </div>
+    <div class="card card-formula">
+      <strong>Loi des mailles</strong><br>
+      La somme algébrique des tensions sur toute maille fermée est nulle :
+      <div class="formula-block">$$\sum_k V_k = 0$$</div>
+      <p style="font-size:13px;margin-bottom:0;">La tension totale "perdue" = la tension "gagnée" sur la maille.</p>
+    </div>
+  </div>
+
+  <h2>2. La méthode en 4 étapes — à appliquer mécaniquement</h2>
+
+  <div class="card card-method">
+    <div class="card-method-label">Méthode Kirchhoff — 4 étapes</div>
+    <div class="step"><span class="step-num">1</span><div class="step-content"><strong>Identifier les nœuds et les branches.</strong> Un nœud = jonction de 3 fils ou plus. Une branche = chemin entre deux nœuds. Assigner un courant $I_k$ à chaque branche avec un sens arbitraire (si le résultat est négatif, le sens réel est inverse).</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content"><strong>Écrire les lois des nœuds.</strong> Pour chaque nœud : courants entrants − courants sortants = 0. Si tu as $n$ nœuds, tu n'écris que $n-1$ équations indépendantes.</div></div>
+    <div class="step"><span class="step-num">3</span><div class="step-content"><strong>Écrire les lois des mailles.</strong> Pour chaque maille : faire le tour dans un sens, additionner les tensions (+ pour les piles dans le sens du tour, − pour les chutes Ohm dans le sens du courant).</div></div>
+    <div class="step"><span class="step-num">4</span><div class="step-content"><strong>Résoudre le système.</strong> Tu dois avoir autant d'équations indépendantes que d'inconnues. Résoudre par substitution ou élimination.</div></div>
+  </div>
+
+  <h2>3. Exercice guidé — Examen Juin 2012</h2>
+
+  <div class="card card-exam">
+    <div class="card-exam-label">Examen Juin 2012 — Question 2 (15 pts)</div>
+    <p>Circuit : 6 résistances identiques $R_1 = R_2 = R_3 = R_4 = R_5 = R_6 = R = 120\,\Omega$, pile $V = 12$ V.</p>
+    <canvas id="kirchhoff-canvas" width="440" height="200"></canvas>
+    <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">$R_1$ et $R_2$ en série, combinaison en parallèle avec $R_3$, puis en série $R_4$, parallèle $R_5$, série $R_6$.</p>
+
+    <p><strong>a) Résistance équivalente</strong></p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">$R_1$ et $R_2$ en série : $R_{12} = 2R$</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content">$R_{12}$ en parallèle avec $R_3$ : $\frac{1}{R_{123}} = \frac{1}{2R} + \frac{1}{R} = \frac{3}{2R}$, donc $R_{123} = \frac{2R}{3}$</div></div>
+    <div class="step"><span class="step-num">3</span><div class="step-content">$R_{123}$ en série avec $R_4$ : $R_{1234} = \frac{2R}{3} + R = \frac{5R}{3}$</div></div>
+    <div class="step"><span class="step-num">4</span><div class="step-content">$R_{1234}$ en parallèle avec $R_5$ : $\frac{1}{R_{12345}} = \frac{3}{5R} + \frac{1}{R} = \frac{8}{5R}$, donc $R_{12345} = \frac{5R}{8}$</div></div>
+    <div class="step"><span class="step-num">5</span><div class="step-content">$R_{12345}$ en série avec $R_6$ : $R_{eq} = \frac{5R}{8} + R = \frac{13R}{8} = \frac{13 \times 120}{8} = \mathbf{195\,\Omega}$</div></div>
+
+    <p style="margin-top:16px;"><strong>b) Courant total débité par la pile</strong></p>
+    $$I = \frac{V}{R_{eq}} = \frac{12}{195} \approx 61{,}5 \text{ mA}$$
+
+    <p style="margin-top:16px;"><strong>c) Courant dans chaque résistance — méthode de proche en proche</strong></p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">$I_6 = I = 61{,}5$ mA (courant total passe par $R_6$). Chute de tension : $V_{R_6} = 120 \times 0{,}0615 = 7{,}38$ V. Tension au nœud C : $V_C = 12 - 7{,}38 = 4{,}62$ V.</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content">Courant dans $R_5$ : $I_5 = V_C / R = 4{,}62 / 120 = 38{,}5$ mA.</div></div>
+    <div class="step"><span class="step-num">3</span><div class="step-content">Loi des nœuds : $I_4 = I_6 - I_5 = 61{,}5 - 38{,}5 = 23$ mA.</div></div>
+    <div class="step"><span class="step-num">4</span><div class="step-content">Tension au nœud B : $V_B = V_C - R_4 I_4 = 4{,}62 - 120 \times 0{,}023 = 1{,}86$ V.</div></div>
+    <div class="step"><span class="step-num">5</span><div class="step-content">$I_3 = V_B / R = 1{,}86 / 120 = 15{,}5$ mA. $I_1 = I_2 = I_4 - I_3 = 23 - 15{,}5 = 7{,}5$ mA.</div></div>
+  </div>
+
+  <h2>4. Exercice à compléter — Examen Août 2006</h2>
+  <div class="card card-exam">
+    <div class="card-exam-label">Examen Août 2006 — Question 4 (10 pts)</div>
+    <p>Pile réelle de f.é.m. $\xi$ et résistance interne $r$, connectée à deux résistances identiques $R$. Deux interrupteurs $S_1$ et $S_2$ initialement ouverts.</p>
+
+    <p><strong>a) S1 et S2 ouverts — courant débité par la pile :</strong></p>
+    <div class="highlight-box blue">
+      Un seul chemin : pile → $r$ → une résistance $R$ (l'autre est déconnectée).<br>
+      $$I = \frac{\xi}{r + R}$$
+    </div>
+
+    <p><strong>b) Différence de potentiel aux bornes de la pile :</strong></p>
+    <div class="highlight-box blue">
+      La pile a une résistance interne $r$ qui "consomme" une partie de la tension :<br>
+      $$V_{ab} = \xi - r \cdot I = \xi - r \cdot \frac{\xi}{r+R} = \xi \cdot \frac{R}{r+R}$$
+    </div>
+
+    <p><strong>c) On ferme S1 — les deux R sont maintenant en parallèle :</strong></p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">$R_{eq} = R/2$ (deux résistances identiques en parallèle)</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content">Nouveau courant : $I' = \xi / (r + R/2)$</div></div>
+    <div class="step"><span class="step-num">3</span><div class="step-content">$V_{ab}' = \xi \cdot \frac{R/2}{r + R/2}$ — la tension aux bornes <strong>diminue</strong> car le courant augmente et la chute dans $r$ augmente.</div></div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Loi des nœuds</div>
+    <div class="quiz-question">Dans un nœud, trois courants arrivent : $I_1 = 3$ A et $I_2 = 2$ A entrent dans le nœud. Un courant $I_3$ sort. Quelle est la valeur de $I_3$ ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q1" value="0"> $I_3 = 1$ A</label>
+      <label class="quiz-option"><input type="radio" name="q1" value="1"> $I_3 = 5$ A</label>
+      <label class="quiz-option"><input type="radio" name="q1" value="2"> $I_3 = -1$ A</label>
+      <label class="quiz-option"><input type="radio" name="q1" value="3"> $I_3 = 6$ A</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz(1)">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-1"></div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Résistances équivalentes</div>
+    <div class="quiz-question">Deux résistances $R_1 = 6\,\Omega$ et $R_2 = 3\,\Omega$ sont branchées en parallèle. Quelle est la résistance équivalente ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q1b" value="0"> $R_{eq} = 9\,\Omega$</label>
+      <label class="quiz-option"><input type="radio" name="q1b" value="1"> $R_{eq} = 4{,}5\,\Omega$</label>
+      <label class="quiz-option"><input type="radio" name="q1b" value="2"> $R_{eq} = 2\,\Omega$</label>
+      <label class="quiz-option"><input type="radio" name="q1b" value="3"> $R_{eq} = 3\,\Omega$</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz('1b')">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-1b"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-prev" disabled>— Précédent</button>
+    <button class="btn btn-next" onclick="goTo(1)">Suivant : Thévenin —</button>
+  </div>
+</section>
+
+<!-- ============================
+     SECTION 2 : THÉVENIN
+============================= -->
+<section class="section" id="sec-1">
+  <div class="section-label">Section 2 sur 6 — Méthode très rentable</div>
+  <h1 class="section-title">Théorème de Thévenin</h1>
+  <p class="section-meta">Dans ~70 % des examens. Thévenin permet de remplacer n'importe quel circuit compliqué par un circuit simple (une pile + une résistance). C'est souvent la méthode que le prof demande explicitement.</p>
+
+  <div class="card card-exam">
+    <div class="card-exam-label">Apparitions dans les examens</div>
+    <table class="occur-table">
+      <tr><th>Année</th><th>Ce qui était demandé</th><th>Points</th></tr>
+      <tr><td>Juin 2024</td><td>Exprimer le circuit sous forme Thévenin (V_Th, R_Th) puis courant dans la branche CD</td><td><span class="badge badge-blue">10 pts</span></td></tr>
+      <tr><td>Juin 2023</td><td>Circuit équivalent de Thévenin vu par le condensateur</td><td><span class="badge badge-blue">5 pts</span></td></tr>
+      <tr><td>Août 2015</td><td>Énoncer le théorème de Thévenin + calculer V_Th et R_Th</td><td><span class="badge badge-blue">8 pts</span></td></tr>
+      <tr><td>Juin 2015</td><td>Trouver l'équivalent Thévenin pour les bornes A et B d'un circuit à 5 résistances</td><td><span class="badge badge-blue">9 pts</span></td></tr>
+      <tr><td>Août 2006</td><td>Calculer l'équivalent Thévenin pour alimenter un galvanomètre</td><td><span class="badge badge-blue">25 pts</span></td></tr>
+    </table>
+  </div>
+
+  <h2>1. L'idée</h2>
+  <p>Peu importe la complexité d'un circuit, vu depuis deux bornes A et B, il se comporte exactement comme une pile de tension $V_{Th}$ en série avec une résistance $R_{Th}$. C'est ça le théorème de Thévenin.</p>
+
+  <canvas id="thevenin-canvas" width="440" height="160"></canvas>
+
+  <h2>2. La méthode en 3 étapes</h2>
+
+  <div class="card card-method">
+    <div class="card-method-label">Méthode Thévenin — 3 étapes</div>
+    <div class="step"><span class="step-num">1</span><div class="step-content"><strong>Calculer $V_{Th}$ — tension à vide.</strong> Déconnecter la charge (ouvrir les bornes A et B). Calculer la tension $V_{AB}$ aux bornes ouvertes. C'est $V_{Th}$.</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content"><strong>Calculer $R_{Th}$ — résistance équivalente.</strong> Éteindre toutes les sources (remplacer les piles par des fils, les sources de courant par des circuits ouverts). Calculer la résistance vue entre A et B.</div></div>
+    <div class="step"><span class="step-num">3</span><div class="step-content"><strong>Reconnecter la charge.</strong> Le circuit se réduit à $V_{Th}$, $R_{Th}$, et la charge en série. Appliquer la loi d'Ohm.</div></div>
+  </div>
+
+  <h2>3. Exercice guidé — Examen Juin 2024</h2>
+  <div class="card card-exam">
+    <div class="card-exam-label">Examen Juin 2024 — Question 2f,g (10 pts)</div>
+    <p>Circuit avec pile $V_{AB}$, résistances $R_1$ et $R_2$. On cherche l'équivalent Thévenin entre les bornes C et D (sans $R_3$).</p>
+
+    <canvas id="thevenin2-canvas" width="440" height="180"></canvas>
+
+    <p><strong>Étape 1 — Calculer $V_{Th}$ (tension à vide entre C et D) :</strong></p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">Sans $R_3$, aucun courant ne circule dans la branche CD. Le courant circule uniquement dans la boucle principale via $R_1$ et $R_2$.</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content">Courant dans la boucle : $I = V_{AB} / (R_1 + R_2)$</div></div>
+    <div class="step"><span class="step-num">3</span><div class="step-content">Tension au point C par rapport à D :</div></div>
+    $$V_{Th} = V_{CD} = \frac{R_2}{R_1 + R_2} \cdot V_{AB}$$
+
+    <p style="margin-top:14px;"><strong>Étape 2 — Calculer $R_{Th}$ (éteindre la pile = remplacer par un fil) :</strong></p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">En éteignant la pile, $R_1$ et $R_2$ se retrouvent en parallèle entre C et D.</div></div>
+    $$R_{Th} = \frac{R_1 R_2}{R_1 + R_2}$$
+
+    <p style="margin-top:14px;"><strong>Étape 3 — Courant dans $R_3$ :</strong></p>
+    $$i_3 = \frac{V_{Th}}{R_{Th} + R_3} = \frac{\frac{R_2}{R_1+R_2} V_{AB}}{\frac{R_1 R_2}{R_1+R_2} + R_3}$$
+
+    <p style="margin-top:12px;"><strong>Si $R_1 = R_2$ :</strong> $V_{Th} = V_{AB}/2$ et $R_{Th} = R_1/2$. Par symétrie, $V_C = V_D$, donc $i_3 = 0$. Le prof confirme d'ailleurs que "on pouvait deviner par symétrie".</p>
+  </div>
+
+  <h2>4. Astuce — Énoncer le théorème (examen août 2015)</h2>
+  <div class="highlight-box blue">
+    <strong>Énoncé complet attendu :</strong> Tout circuit linéaire vu depuis deux bornes A et B peut être remplacé par un circuit équivalent constitué d'une source de tension $V_{Th}$ (égale à la tension à vide entre A et B) en série avec une résistance $R_{Th}$ (égale à la résistance vue entre A et B lorsque toutes les sources indépendantes sont éteintes).
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Calcul de R_Th</div>
+    <div class="quiz-question">Pour calculer $R_{Th}$ dans le théorème de Thévenin, que fait-on avec les sources de tension ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q2" value="0"> On les laisse en place et on mesure la tension à leurs bornes.</label>
+      <label class="quiz-option"><input type="radio" name="q2" value="1"> On les remplace par des circuits ouverts (on les retire).</label>
+      <label class="quiz-option"><input type="radio" name="q2" value="2"> On les remplace par des fils (court-circuit).</label>
+      <label class="quiz-option"><input type="radio" name="q2" value="3"> On les remplace par leur résistance interne.</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz(2)">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-2"></div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Application directe</div>
+    <div class="quiz-question">Un circuit vu depuis les bornes A-B a une tension à vide $V_{Th} = 6$ V et une résistance équivalente $R_{Th} = 2\,\Omega$. On connecte une charge $R_L = 4\,\Omega$ entre A et B. Quel courant circule dans $R_L$ ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q2b" value="0"> $I = 3$ A</label>
+      <label class="quiz-option"><input type="radio" name="q2b" value="1"> $I = 1{,}5$ A</label>
+      <label class="quiz-option"><input type="radio" name="q2b" value="2"> $I = 1$ A</label>
+      <label class="quiz-option"><input type="radio" name="q2b" value="3"> $I = 2$ A</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz('2b')">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-2b"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-prev" onclick="goTo(0)">— Précédent</button>
+    <button class="btn btn-next" onclick="goTo(2)">Suivant : Déphasage et puissance AC —</button>
+  </div>
+</section>
+
+<!-- ============================
+     SECTION 3 : DÉPHASAGE + PUISSANCE AC
+============================= -->
+<section class="section" id="sec-2">
+  <div class="section-label">Section 3 sur 6 — Cœur des exercices AC</div>
+  <h1 class="section-title">Déphasage et puissance AC</h1>
+  <p class="section-meta">Dans ~90 % des examens — toujours dans les exercices AC. Si tu sais calculer le déphasage $\varphi$ et la puissance $P = V_{eff} I_{eff} \cos\varphi$, tu accèdes à 5-8 points dans presque chaque exercice de circuit AC.</p>
+
+  <h2>1. Rappel — Les impédances</h2>
+  <div class="card card-formula">
+    <table class="occur-table" style="margin:0;">
+      <tr><th>Composant</th><th>$Z$</th><th>Partie réelle</th><th>Partie imaginaire</th></tr>
+      <tr><td>Résistance $R$</td><td>$R$</td><td>$R$</td><td>$0$</td></tr>
+      <tr><td>Bobine $L$</td><td>$j\omega L$</td><td>$0$</td><td>$+\omega L$</td></tr>
+      <tr><td>Condensateur $C$</td><td>$\dfrac{1}{j\omega C} = \dfrac{-j}{\omega C}$</td><td>$0$</td><td>$-\dfrac{1}{\omega C}$</td></tr>
+    </table>
+  </div>
+
+  <h2>2. Déphasage $\varphi$</h2>
+  <div class="card card-formula">
+    <strong>Le déphasage</strong> entre la tension et le courant est l'argument de l'impédance $Z = |Z|e^{j\varphi}$ :
+    <div class="formula-block">$$\tan\varphi = \frac{\text{Im}(Z)}{\text{Re}(Z)}$$</div>
+    <p style="margin-top:8px;font-size:14px;">
+    — $\varphi > 0$ : tension en avance sur le courant (circuit inductif — bobine domine)<br>
+    — $\varphi < 0$ : tension en retard sur le courant (circuit capacitif — condensateur domine)<br>
+    — $\varphi = 0$ : tension et courant en phase (résistance pure ou résonance)
+    </p>
+  </div>
+
+  <h2>3. Courant efficace</h2>
+  <div class="card card-formula">
+    <div class="formula-block">$$i_{eff} = \frac{i_0}{\sqrt{2}} = \frac{v_{eff}}{|Z|}$$</div>
+    <p style="font-size:14px;margin-top:8px;">où $v_{eff}$ est la tension efficace de la source et $|Z| = \sqrt{[\text{Re}(Z)]^2 + [\text{Im}(Z)]^2}$.</p>
+  </div>
+
+  <h2>4. Puissance dissipée</h2>
+  <div class="card card-formula">
+    <strong>Puissance moyenne dissipée sur un cycle :</strong>
+    <div class="formula-block">$$P = v_{eff} \cdot i_{eff} \cdot \cos\varphi = i_{eff}^2 \cdot R$$</div>
+    <p style="margin-top:8px;font-size:14px;">Le terme $\cos\varphi$ s'appelle le <strong>facteur de puissance</strong>. Seule la résistance dissipe de la puissance. La bobine et le condensateur idéaux ne dissipent rien.</p>
+  </div>
+
+  <div class="card card-warning">
+    <strong>3 cas limites à connaître :</strong>
+    <ul style="margin-top:8px;">
+      <li>Résistance pure : $\varphi = 0$, $\cos\varphi = 1$, $P = V_{eff} I_{eff}$ (puissance maximale)</li>
+      <li>Bobine pure : $\varphi = +90°$, $\cos\varphi = 0$, $P = 0$ (aucune dissipation)</li>
+      <li>Condensateur pur : $\varphi = -90°$, $\cos\varphi = 0$, $P = 0$ (aucune dissipation)</li>
+    </ul>
+  </div>
+
+  <h2>5. Exercice complet — Examen Juin 2023</h2>
+  <div class="card card-exam">
+    <div class="card-exam-label">Examen Juin 2023 — Q1B (12 pts)</div>
+    <p>Lampe solénoïdale : $R = 1\,\Omega$, $L = 1$ mH. Générateur AC : $v_{eff} = 10$ V, pulsation $\omega$.</p>
+
+    <p><strong>Q1Bb — Déphasage entre tension et courant pour chaque lampe :</strong></p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">Lampe solénoïdale (RL série) : $Z = R + j\omega L = 1 + j\omega \times 10^{-3}$</div></div>
+    $$\tan\varphi_{sol} = \frac{\omega L}{R} = \frac{\omega \times 10^{-3}}{1} = \omega \times 10^{-3}$$
+    <div class="step"><span class="step-num">2</span><div class="step-content">Lampe linéaire (R pur) : $Z = R = 1\,\Omega$, donc $\text{Im}(Z) = 0$</div></div>
+    $$\varphi_{lin} = 0$$
+
+    <p style="margin-top:14px;"><strong>Q1Bc — Puissance dissipée par chaque lampe :</strong></p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">$|Z_{sol}| = \sqrt{R^2 + \omega^2 L^2} = \sqrt{1 + \omega^2 \times 10^{-6}}$</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content">$i_{eff,sol} = v_{eff}/|Z_{sol}| = 10 / \sqrt{1 + \omega^2 \times 10^{-6}}$</div></div>
+    <div class="step"><span class="step-num">3</span><div class="step-content">$P_{sol} = i_{eff}^2 \cdot R = \frac{100 \times 1}{1 + \omega^2 \times 10^{-6}}$ W</div></div>
+    <div class="step"><span class="step-num">4</span><div class="step-content">Lampe linéaire : $i_{eff,lin} = 10/1 = 10$ A, $P_{lin} = 10^2 \times 1 = 100$ W</div></div>
+
+    <p style="margin-top:14px;"><strong>Q1Bd,e — Puissance lumineuse (10 W élec = 1 W lumineux) :</strong></p>
+    $$P_{lum,lin} = \frac{P_{lin}}{10} = 10 \text{ W lumineux}$$
+    $$P_{lum,sol} = \frac{P_{sol}}{10} = \frac{10}{1 + \omega^2 \times 10^{-6}} \text{ W lumineux}$$
+    <p>La puissance "perdue" (chaleur) = $P_{elec} - P_{lum} = 0{,}9 \times P_{elec}$.</p>
+  </div>
+
+  <h2>6. Exercice — Examen Juin 2016</h2>
+  <div class="card card-exam">
+    <div class="card-exam-label">Examen Juin 2016 — Q2 (32 pts) — extraits clés</div>
+    <p>Circuit : condensateur $C_1 = 0{,}5\,\mu$F en haut, condensateur $C_2 = 0{,}2\,\mu$F à droite, résistance $R = 10\,k\Omega$ au milieu. Source AC : $v_{eff} = 120$ V, $f = 50$ Hz.</p>
+
+    <p><strong>Impédances :</strong></p>
+    $$\omega = 2\pi f = 2\pi \times 50 \approx 314 \text{ rad/s}$$
+    $$Z_{C_1} = \frac{1}{j\omega C_1} = \frac{1}{j \times 314 \times 0{,}5 \times 10^{-6}} \approx \frac{-j}{1{,}57 \times 10^{-4}} \approx -6369j\,\Omega$$
+    $$Z_{C_2} = \frac{1}{j\omega C_2} \approx -15\,915j\,\Omega$$
+
+    <p><strong>Question clé — la résistance fondra-t-elle ?</strong> Elle supporte max 0,25 W. On calcule la puissance dissipée dans $R$ et on compare.</p>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Déphasage</div>
+    <div class="quiz-question">Un circuit RL série a $R = 10\,\Omega$ et $\omega L = 10\,\Omega$. Quel est le déphasage $\varphi$ entre tension et courant ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q3" value="0"> $\varphi = 0°$ — en phase</label>
+      <label class="quiz-option"><input type="radio" name="q3" value="1"> $\varphi = 45°$ — tension en avance de 45°</label>
+      <label class="quiz-option"><input type="radio" name="q3" value="2"> $\varphi = 90°$ — tension en avance de 90°</label>
+      <label class="quiz-option"><input type="radio" name="q3" value="3"> $\varphi = -45°$ — tension en retard de 45°</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz(3)">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-3"></div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Puissance</div>
+    <div class="quiz-question">Un circuit purement inductif (bobine idéale, $R = 0$) est alimenté par une source AC. Quelle puissance moyenne dissipe-t-il ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q3b" value="0"> $P = V_{eff}^2 / (\omega L)$</label>
+      <label class="quiz-option"><input type="radio" name="q3b" value="1"> $P = V_{eff} I_{eff}$</label>
+      <label class="quiz-option"><input type="radio" name="q3b" value="2"> $P = 0$ — la bobine ne dissipe aucune puissance</label>
+      <label class="quiz-option"><input type="radio" name="q3b" value="3"> $P = V_{eff} I_{eff} / 2$</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz('3b')">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-3b"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-prev" onclick="goTo(1)">— Précédent</button>
+    <button class="btn btn-next" onclick="goTo(3)">Suivant : Transformateur —</button>
+  </div>
+</section>
+
+<!-- ============================
+     SECTION 4 : TRANSFORMATEUR
+============================= -->
+<section class="section" id="sec-3">
+  <div class="section-label">Section 4 sur 6 — Points faciles si connu</div>
+  <h1 class="section-title">Transformateur</h1>
+  <p class="section-meta">Dans ~65 % des examens. Le transformateur est souvent une question autonome de 4-8 pts en théorie ou exercice. Deux formules à connaître et c'est réglé.</p>
+
+  <div class="card card-exam">
+    <div class="card-exam-label">Apparitions dans les examens</div>
+    <table class="occur-table">
+      <tr><th>Année</th><th>Ce qui était demandé</th><th>Points</th></tr>
+      <tr><td>Juin 2024</td><td>Question théorie : expliquer pourquoi des aurores boréales perturbent les transformateurs</td><td><span class="badge badge-blue">3 pts</span></td></tr>
+      <tr><td>Juin 2022</td><td>Tension aux bornes du secondaire si tension DC appliquée au primaire — justifier</td><td><span class="badge badge-blue">4 pts</span></td></tr>
+      <tr><td>Août 2016</td><td>Calcul complet : nombre de spires secondaires, courant, puissance, impédance</td><td><span class="badge badge-blue">29 pts</span></td></tr>
+      <tr><td>Juin 2014</td><td>Pourquoi le transport d'électricité utilise AC haute tension — rôle du transformateur</td><td><span class="badge badge-blue">6 pts</span></td></tr>
+      <tr><td>Août 2006</td><td>Principe de fonctionnement + exemple d'application pratique</td><td><span class="badge badge-blue">4 pts</span></td></tr>
+    </table>
+  </div>
+
+  <h2>1. Principe physique</h2>
+  <p>Un transformateur exploite la <strong>loi de Faraday</strong> : un courant alternatif dans le circuit primaire crée un flux magnétique variable dans le noyau de fer, qui induit une tension dans le circuit secondaire.</p>
+
+  <div class="card card-warning">
+    <strong>Point clé tombé en juin 2022 :</strong> Un transformateur NE FONCTIONNE PAS en courant continu (DC). Si on applique une tension DC, le flux magnétique est constant, donc $d\Phi/dt = 0$, donc la tension induite au secondaire est nulle. Le prof a posé cette question exacte : réponse = tension secondaire = 0 V.
+  </div>
+
+  <h2>2. Les deux formules</h2>
+  <div class="card card-formula">
+    <strong>Rapport de tension (transformateur idéal) :</strong>
+    <div class="formula-block">$$\frac{V_2}{V_1} = \frac{N_2}{N_1}$$</div>
+    <p style="margin-top:8px;font-size:14px;">où $N_1$ est le nombre de spires au primaire et $N_2$ au secondaire.</p>
+  </div>
+  <div class="card card-formula">
+    <strong>Conservation de la puissance (transformateur idéal, sans pertes) :</strong>
+    <div class="formula-block">$$P_1 = P_2 \implies V_1 I_1 = V_2 I_2 \implies \frac{I_2}{I_1} = \frac{N_1}{N_2}$$</div>
+    <p style="margin-top:8px;font-size:14px;">Si on monte la tension (élévateur : $N_2 > N_1$), le courant diminue dans le même rapport, et inversement.</p>
+  </div>
+
+  <h2>3. Exercice guidé — Examen Août 2016</h2>
+  <div class="card card-exam">
+    <div class="card-exam-label">Examen Août 2016 — Question 2 (extraits)</div>
+    <p>Transformateur : sonnette de 6 V (efficace). Primaire : 240 spires, $L = 3$ H, résistance négligeable. Source primaire : 120 V (efficace), 60 Hz.</p>
+
+    <p><strong>a) Nombre de spires au secondaire :</strong></p>
+    $$\frac{V_2}{V_1} = \frac{N_2}{N_1} \implies N_2 = N_1 \cdot \frac{V_2}{V_1} = 240 \times \frac{6}{120} = 12 \text{ spires}$$
+
+    <p style="margin-top:14px;"><strong>b) Phaseur du circuit primaire (secondaire ouvert) :</strong></p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">Secondaire ouvert : aucune charge. Le primaire se comporte comme une bobine pure.</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content">$\omega = 2\pi \times 60 \approx 377$ rad/s. $Z_L = j\omega L = j \times 377 \times 3 = 1131j\,\Omega$</div></div>
+    <div class="step"><span class="step-num">3</span><div class="step-content">Phaseur du courant primaire : $\hat{I}_1 = \hat{V}_1 / Z_L = 120 / (1131j) = -0{,}106j$ A</div></div>
+
+    <p style="margin-top:14px;"><strong>c) Puissance dissipée au primaire (secondaire ouvert) :</strong></p>
+    <p>Le primaire est une bobine pure ($R = 0$) : $P_1 = i_{eff}^2 \times R = 0$ W. Aucune puissance dissipée. Toute l'énergie est stockée temporairement dans le champ magnétique.</p>
+
+    <p style="margin-top:14px;"><strong>f) Secondaire fermé sur la sonnette ($L_{son} = 2$ H, $R_{son} = 10\,\Omega$) :</strong></p>
+    $$Z_{sec} = R + j\omega L = 10 + j \times 377 \times 2 = 10 + 754j\,\Omega$$
+    $$|Z_{sec}| = \sqrt{100 + 754^2} \approx 754\,\Omega$$
+  </div>
+
+  <h2>4. Pourquoi haute tension pour le transport — question récurrente</h2>
+  <div class="highlight-box blue">
+    <strong>Réponse complète attendue (juin 2014) :</strong><br><br>
+    <strong>Pourquoi AC :</strong> Le transformateur ne fonctionne qu'en courant alternatif (il faut $d\Phi/dt \neq 0$). Le transformateur permet de modifier la tension, ce qui n'est pas possible en DC sans composants électroniques complexes.<br><br>
+    <strong>Pourquoi haute tension :</strong> La puissance transportée vaut $P = V \times I$. Pour une puissance donnée, augmenter $V$ réduit $I$. Or les pertes par effet Joule dans les câbles valent $P_{pertes} = R_{ligne} \times I^2$. Moins de courant = beaucoup moins de pertes (effet quadratique).
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Rapport de transformation</div>
+    <div class="quiz-question">Un transformateur a 500 spires au primaire et 100 spires au secondaire. La tension primaire est 230 V. Quelle est la tension secondaire ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q4" value="0"> $V_2 = 1150$ V</label>
+      <label class="quiz-option"><input type="radio" name="q4" value="1"> $V_2 = 46$ V</label>
+      <label class="quiz-option"><input type="radio" name="q4" value="2"> $V_2 = 230$ V</label>
+      <label class="quiz-option"><input type="radio" name="q4" value="3"> $V_2 = 23$ V</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz(4)">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-4"></div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Tension DC sur un transformateur (Juin 2022)</div>
+    <div class="quiz-question">On applique une tension continue (DC) de 200 V au primaire d'un transformateur de 200 spires au primaire et 100 spires au secondaire. Quelle est la tension au secondaire ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q4b" value="0"> $V_2 = 100$ V (rapport de spires normal)</label>
+      <label class="quiz-option"><input type="radio" name="q4b" value="1"> $V_2 = 400$ V (le transformateur amplifie)</label>
+      <label class="quiz-option"><input type="radio" name="q4b" value="2"> $V_2 = 0$ V — le transformateur ne fonctionne pas en DC</label>
+      <label class="quiz-option"><input type="radio" name="q4b" value="3"> $V_2 = 200$ V (identique au primaire)</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz('4b')">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-4b"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-prev" onclick="goTo(2)">— Précédent</button>
+    <button class="btn btn-next" onclick="goTo(4)">Suivant : Loi de Faraday —</button>
+  </div>
+</section>
+
+<!-- ============================
+     SECTION 5 : FARADAY
+============================= -->
+<section class="section" id="sec-4">
+  <div class="section-label">Section 5 sur 6 — Théorie + vérification dimensionnelle</div>
+  <h1 class="section-title">Loi de Faraday-Lenz</h1>
+  <p class="section-meta">Dans ~60 % des examens. Le prof pose quasi-toujours la même question : énoncer la loi + vérifier l'homogénéité dimensionnelle. C'est 4 à 6 points pour 30 minutes d'étude.</p>
+
+  <div class="card card-exam">
+    <div class="card-exam-label">Questions exactes tombées à l'examen</div>
+    <table class="occur-table">
+      <tr><th>Année</th><th>Formulation exacte</th><th>Points</th></tr>
+      <tr><td>Juin 2024</td><td>Énoncer la loi de Faraday-Lenz (théorie)</td><td><span class="badge badge-blue">4 pts</span></td></tr>
+      <tr><td>Juin 2024</td><td>Démontrer l'homogénéité dimensionnelle de $\xi = -d\Phi_B/dt$</td><td><span class="badge badge-blue">6 pts</span></td></tr>
+      <tr><td>Juin 2017</td><td>Vérifier l'homogénéité dimensionnelle de la loi de Faraday-Lenz</td><td><span class="badge badge-blue">4 pts</span></td></tr>
+      <tr><td>Juin 2019</td><td>Conditions pour créer un courant à partir d'un champ magnétique</td><td><span class="badge badge-blue">3 pts</span></td></tr>
+      <tr><td>Août 2006</td><td>Principe du transformateur + loi de Faraday</td><td><span class="badge badge-blue">4 pts</span></td></tr>
+    </table>
+  </div>
+
+  <h2>1. La loi</h2>
+  <div class="card card-formula">
+    <strong>Loi de Faraday-Lenz :</strong> La force électromotrice (f.é.m.) induite dans un circuit est égale à l'opposé de la dérivée temporelle du flux magnétique à travers ce circuit :
+    <div class="formula-block">$$\xi = -\frac{d\Phi_B}{dt}$$</div>
+    <p style="margin-top:8px;font-size:14px;">Le signe moins (loi de Lenz) indique que le courant induit s'oppose à la variation de flux qui lui a donné naissance.</p>
+  </div>
+
+  <div class="card card-formula">
+    <strong>Définition du flux magnétique :</strong>
+    <div class="formula-block">$$\Phi_B = \int \vec{B} \cdot d\vec{A}$$</div>
+    <p style="font-size:14px;margin-top:8px;">Cas particulier d'une surface plane et champ uniforme : $\Phi_B = B \cdot A \cdot \cos\theta$, où $\theta$ est l'angle entre $\vec{B}$ et la normale à la surface. Unité : Weber (Wb) = T·m².</p>
+  </div>
+
+  <h2>2. Vérification dimensionnelle — tombée en 2017 ET 2024</h2>
+  <div class="card card-example">
+    <div class="card-example-label">Question exacte — Examen Juin 2024 et Juin 2017</div>
+    <p><strong>Démontrer que les dimensions du membre gauche et du membre droit de $\xi = -d\Phi_B/dt$ sont identiques.</strong></p>
+
+    <div class="step"><span class="step-num">1</span><div class="step-content"><strong>Membre gauche :</strong> $\xi$ est une force électromotrice = une tension. Son unité est le volt (V).</div></div>
+    $$[\xi] = \text{V} = \frac{\text{kg} \cdot \text{m}^2}{\text{A} \cdot \text{s}^3}$$
+
+    <div class="step"><span class="step-num">2</span><div class="step-content"><strong>Membre droit :</strong> $\Phi_B$ est un flux magnétique = $[B] \times [A]$. Le champ magnétique $B$ s'exprime en Tesla.</div></div>
+    $$[B] = \text{T} = \frac{\text{kg}}{\text{A} \cdot \text{s}^2}$$
+    $$[\Phi_B] = [B] \times [A] = \frac{\text{kg}}{\text{A} \cdot \text{s}^2} \times \text{m}^2 = \frac{\text{kg} \cdot \text{m}^2}{\text{A} \cdot \text{s}^2} = \text{Wb}$$
+
+    <div class="step"><span class="step-num">3</span><div class="step-content"><strong>La dérivée par rapport au temps :</strong></div></div>
+    $$\left[\frac{d\Phi_B}{dt}\right] = \frac{\text{kg} \cdot \text{m}^2}{\text{A} \cdot \text{s}^2} \times \frac{1}{\text{s}} = \frac{\text{kg} \cdot \text{m}^2}{\text{A} \cdot \text{s}^3} = \text{V}$$
+
+    <div class="highlight-box green" style="margin-top:12px;">
+      Les deux membres ont les mêmes dimensions : V = kg·m²·A⁻¹·s⁻³. L'équation est donc homogène. C.Q.F.D.
+    </div>
+  </div>
+
+  <h2>3. Loi de Lenz — sens du courant induit</h2>
+  <div class="highlight-box blue">
+    <strong>La règle :</strong> Le courant induit crée toujours un champ magnétique qui s'oppose à la variation de flux qui lui a donné naissance.<br><br>
+    — Si le flux augmente : le courant induit crée un champ qui s'oppose à l'augmentation (dans le sens opposé à $\vec{B}$).<br>
+    — Si le flux diminue : le courant induit crée un champ qui compense la diminution (dans le même sens que $\vec{B}$).
+  </div>
+
+  <canvas id="faraday-canvas" width="440" height="180"></canvas>
+  <p style="font-size:13px;color:var(--text-muted);">On approche le pôle Nord d'un aimant d'une boucle : le flux augmente. Par Lenz, le courant induit s'oppose — il tourne dans le sens qui crée un pôle Nord face à l'aimant (répulsion).</p>
+
+  <h2>4. Application — générateur (examen juin 2019)</h2>
+  <div class="card card-exam">
+    <div class="card-exam-label">Examen Juin 2019 — Question 2</div>
+    <p>La f.é.m. d'un générateur (bobine tournant dans un aimant) vaut $\xi_{ind} = \xi_0 \sin(\omega t)$, avec $\xi_0 = AB\omega$. Ramener les unités de $\xi_0$ à une unité simple du système MKSA.</p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">$[A] = \text{m}^2$, $[B] = \text{T} = \text{kg}/(\text{A}\cdot\text{s}^2)$, $[\omega] = \text{rad/s} = \text{s}^{-1}$</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content">$[\xi_0] = \text{m}^2 \times \frac{\text{kg}}{\text{A}\cdot\text{s}^2} \times \text{s}^{-1} = \frac{\text{kg}\cdot\text{m}^2}{\text{A}\cdot\text{s}^3} = \text{V}$</div></div>
+    <p>$\xi_0$ s'exprime bien en volts — cohérent avec le fait que c'est une tension.</p>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Loi de Lenz</div>
+    <div class="quiz-question">On éloigne le pôle Nord d'un aimant d'une boucle conductrice. Le flux magnétique à travers la boucle diminue. Dans quel sens le courant induit circule-t-il ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q5" value="0"> Dans le sens qui crée un pôle Sud face à l'aimant (pour attirer l'aimant et contrecarrer l'éloignement).</label>
+      <label class="quiz-option"><input type="radio" name="q5" value="1"> Dans le sens qui crée un pôle Nord face à l'aimant (pour repousser l'aimant).</label>
+      <label class="quiz-option"><input type="radio" name="q5" value="2"> Aucun courant n'est induit car l'aimant s'éloigne.</label>
+      <label class="quiz-option"><input type="radio" name="q5" value="3"> Le sens dépend de la vitesse d'éloignement.</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz(5)">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-5"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-prev" onclick="goTo(3)">— Précédent</button>
+    <button class="btn btn-next" onclick="goTo(5)">Suivant : Mouvement circulaire —</button>
+  </div>
+</section>
+
+<!-- ============================
+     SECTION 6 : MOUVEMENT CIRCULAIRE
+============================= -->
+<section class="section" id="sec-5">
+  <div class="section-label">Section 6 sur 6 — Exercices de mécanique avancée</div>
+  <h1 class="section-title">Mouvement circulaire</h1>
+  <p class="section-meta">Dans ~55 % des examens. Les questions sur le mouvement circulaire tombent souvent dans les exercices de mécanique (suite de la conservation d'énergie). Maîtriser $a = v^2/R$ et la condition de tension de la corde te donne les sous-questions intermédiaires.</p>
+
+  <h2>1. Accélération centripète</h2>
+  <div class="card card-formula">
+    <strong>Dans un mouvement circulaire</strong>, l'accélération est dirigée vers le centre du cercle :
+    <div class="formula-block">$$a_c = \frac{v^2}{R}$$</div>
+    <p style="margin-top:8px;font-size:14px;">La force centripète nécessaire pour maintenir ce mouvement est :</p>
+    <div class="formula-block">$$F_c = m \cdot a_c = \frac{mv^2}{R}$$</div>
+    <p style="font-size:14px;margin-top:8px;">Cette force est toujours dirigée vers le centre. Elle peut être assurée par la tension d'une corde, la réaction normale, la gravité, etc.</p>
+  </div>
+
+  <h2>2. Condition de tension de la corde — très souvent demandée</h2>
+  <div class="card card-warning">
+    <strong>La corde reste tendue si et seulement si la tension $T \geq 0$.</strong><br><br>
+    Au point le plus haut d'un cercle vertical, la gravité et la tension contribuent toutes les deux vers le centre :
+    $$T + mg = \frac{mv_{haut}^2}{R}$$
+    La corde est tendue si $T \geq 0$, soit $v_{haut}^2 \geq gR$, soit $v_{haut} \geq \sqrt{gR}$.
+  </div>
+
+  <h2>3. Exercice complet — Examen Juin 2023 (suite)</h2>
+  <div class="card card-exam">
+    <div class="card-exam-label">Examen Juin 2023 — Q3c, 3d, 3e (6 pts)</div>
+    <p>Suite de l'exercice pendule avec crochet ($h = 0{,}75L$, rayon $R = L - h = 0{,}25L$). On a trouvé $v_{bas} = \sqrt{2gL}$ et $v_{haut} = \sqrt{gL}$.</p>
+
+    <canvas id="circular-canvas" width="440" height="220"></canvas>
+
+    <p><strong>Q3c — Force centrifuge au sommet de la demi-trajectoire :</strong></p>
+    <p>La pseudo-force centrifuge est de même intensité que la force centripète, mais de sens opposé :</p>
+    $$F_{cent} = \frac{mv_{haut}^2}{R} = \frac{m \cdot gL}{0{,}25L} = 4mg$$
+    <p>Dirigée vers l'extérieur du cercle (vers le haut au sommet).</p>
+
+    <p style="margin-top:14px;"><strong>Q3d — Résultante des deux forces au sommet :</strong></p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">Les deux forces au sommet : pesanteur $mg$ (vers le bas) + tension $T$ (vers le bas = vers le centre).</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content">Résultante vers le centre : $F_{tot} = T + mg = mv_{haut}^2/R = 4mg$</div></div>
+    <div class="step"><span class="step-num">3</span><div class="step-content">Donc $T = 4mg - mg = 3mg$, dirigée vers le bas (vers le centre).</div></div>
+
+    <p style="margin-top:14px;"><strong>Q3e — Condition pour que la corde soit tendue au sommet :</strong></p>
+    $$T \geq 0 \implies \frac{mv_{haut}^2}{R} - mg \geq 0 \implies v_{haut}^2 \geq gR$$
+    <p>La corde est tendue si $v_{haut}^2 \geq g(L-h)$. Ici $v_{haut}^2 = gL$ et $g(L-h) = g \times 0{,}25L$. Donc $gL \geq 0{,}25gL$ — condition vérifiée, la corde est bien tendue.</p>
+  </div>
+
+  <h2>4. Démonstration que $d\vec{1}_t/dt = \omega\vec{1}_n$ — examen juin 2017</h2>
+  <div class="card card-exam">
+    <div class="card-exam-label">Examen Juin 2017 — Question 1 (9 pts)</div>
+    <p>On demande de démontrer que l'accélération centripète vaut $a_c = v^2/R = R\omega^2$.</p>
+    <div class="step"><span class="step-num">1</span><div class="step-content">La vitesse en MCU : $\vec{v} = v \vec{1}_t$ (tangente à la trajectoire, module constant $v = R\omega$).</div></div>
+    <div class="step"><span class="step-num">2</span><div class="step-content">L'accélération : $\vec{a} = d\vec{v}/dt = v \cdot d\vec{1}_t/dt$. Il faut calculer $d\vec{1}_t/dt$.</div></div>
+    <div class="step"><span class="step-num">3</span><div class="step-content">En coordonnées : $\vec{1}_t = (-\sin\theta, \cos\theta)$ avec $\theta = \omega t$. Donc $d\vec{1}_t/dt = (-\omega\cos\theta, -\omega\sin\theta) = -\omega\vec{1}_r = \omega\vec{1}_n$ (vers le centre).</div></div>
+    <div class="step"><span class="step-num">4</span><div class="step-content">Donc $|\vec{a}| = v\omega = (R\omega)\omega = R\omega^2 = v^2/R$. Dirigée vers le centre.</div></div>
+  </div>
+
+  <h2>5. Mouvement circulaire d'une particule chargée (examen juin 2025, 2018...)</h2>
+  <div class="card card-formula">
+    <strong>Particule chargée dans un champ magnétique uniforme :</strong> La force de Lorentz $F = qvB$ joue le rôle de la force centripète.
+    <div class="formula-block">$$qvB = \frac{mv^2}{r} \implies r = \frac{mv}{qB}$$</div>
+    <p style="font-size:14px;margin-top:8px;">Le rayon de la trajectoire circulaire dépend de la masse, de la vitesse, de la charge et du champ. Ce résultat est utilisé dans les cyclotrons et spectromètres de masse.</p>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Force centripète</div>
+    <div class="quiz-question">Une balle de 0,5 kg tourne en cercle de rayon 2 m à la vitesse de 4 m/s. Quelle est la force centripète qui s'exerce sur elle ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q6" value="0"> $F = 1$ N</label>
+      <label class="quiz-option"><input type="radio" name="q6" value="1"> $F = 2$ N</label>
+      <label class="quiz-option"><input type="radio" name="q6" value="2"> $F = 4$ N</label>
+      <label class="quiz-option"><input type="radio" name="q6" value="3"> $F = 8$ N</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz(6)">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-6"></div>
+  </div>
+
+  <div class="quiz-block">
+    <div class="quiz-header">Quiz — Condition de tension (type Juin 2023)</div>
+    <div class="quiz-question">Une balle effectue un tour complet autour d'un crochet. Au sommet du cercle (rayon $R$), quelle est la vitesse minimale pour que la corde reste tendue ?</div>
+    <div class="quiz-options">
+      <label class="quiz-option"><input type="radio" name="q6b" value="0"> $v_{min} = \sqrt{2gR}$</label>
+      <label class="quiz-option"><input type="radio" name="q6b" value="1"> $v_{min} = \sqrt{gR}$</label>
+      <label class="quiz-option"><input type="radio" name="q6b" value="2"> $v_{min} = \sqrt{gR/2}$</label>
+      <label class="quiz-option"><input type="radio" name="q6b" value="3"> $v_{min} = 0$ — la corde est toujours tendue</label>
+    </div>
+    <button class="quiz-submit" onclick="checkQuiz('6b')">Vérifier</button>
+    <div class="quiz-feedback" id="qfb-6b"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-prev" onclick="goTo(4)">— Précédent</button>
+    <button class="btn btn-next" onclick="finishCourse()">Terminer — Couche 2 complète</button>
+  </div>
+</section>
+
+<!-- DONE BANNER -->
+<div id="done-banner">
+  <h1>Couche 2 terminée.</h1>
+  <p>Tu as maintenant les deux couches. Voilà où tu en es.</p>
+  <br>
+  <div class="card" style="max-width:520px;margin:0 auto;text-align:left;">
+    <h3 style="margin-top:0;">Bilan des deux sites</h3>
+    <table class="occur-table">
+      <tr><th>Couche</th><th>Ce que tu maîtrises</th><th>Note estimée</th></tr>
+      <tr><td>Couche 1</td><td>Définitions théorie + bases mécanique</td><td><span class="badge badge-orange">~5/20</span></td></tr>
+      <tr><td>Couche 1 + 2</td><td>+ Kirchhoff, Thévenin, AC, Faraday...</td><td><span class="badge badge-green">~6,5/20</span></td></tr>
+    </table>
+    <div class="highlight-box orange" style="margin-top:16px;">
+      <strong>Prochaine étape recommandée :</strong> Prends un vrai ancien examen (juin 2022 ou juin 2023) et fais-le en conditions réelles, sans aide. Tu verras exactement où tu perds des points. C'est plus utile que n'importe quelle couche 3.
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+let currentSection = 0;
+const totalSections = 6;
+const visited = new Set([0]);
+
+function goTo(idx) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + idx).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach((item, i) => {
+    item.classList.remove('active');
+    if (i === idx) item.classList.add('active');
+    if (visited.has(i) && i !== idx) item.classList.add('done');
+    else if (i !== idx) item.classList.remove('done');
+  });
+  currentSection = idx;
+  visited.add(idx);
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+  document.getElementById('done-banner').style.display = 'none';
+}
+
+function finishCourse() {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('done-banner').style.display = 'block';
+  for (let i = 0; i < totalSections; i++) visited.add(i);
+  updateProgress();
+  document.querySelectorAll('.nav-item').forEach(item => item.classList.add('done'));
+}
+
+function updateProgress() {
+  const pct = Math.round((visited.size / totalSections) * 100);
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = visited.size + ' / ' + totalSections + ' sections';
+}
+
+const quizData = {
+  1:   {correct:'1', explanation:'Correct ! Loi des nœuds : $\\sum I_k = 0$. Ce qui entre = ce qui sort. $I_1 + I_2 = I_3$, donc $I_3 = 3 + 2 = 5$ A.'},
+  '1b':{correct:'2', explanation:'Correct ! En parallèle : $\\frac{1}{R_{eq}} = \\frac{1}{6} + \\frac{1}{3} = \\frac{1}{6} + \\frac{2}{6} = \\frac{3}{6} = \\frac{1}{2}$, donc $R_{eq} = 2\\,\\Omega$.'},
+  2:   {correct:'2', explanation:'Correct ! Pour calculer $R_{Th}$, on éteint les sources de tension en les remplaçant par des fils (court-circuit). Les sources de courant seraient remplacées par des circuits ouverts.'},
+  '2b':{correct:'2', explanation:'Correct ! Circuit Thévenin : $V_{Th}$ et $R_{Th}$ en série avec $R_L$. $I = V_{Th}/(R_{Th}+R_L) = 6/(2+4) = 6/6 = 1$ A.'},
+  3:   {correct:'1', explanation:'Correct ! $\\tan\\varphi = \\text{Im}(Z)/\\text{Re}(Z) = \\omega L / R = 10/10 = 1$, donc $\\varphi = \\arctan(1) = 45°$. La bobine domine légèrement — tension en avance de 45°.'},
+  '3b':{correct:'2', explanation:'Correct ! Pour une bobine idéale ($R = 0$), $\\varphi = 90°$ et $\\cos\\varphi = 0$. Donc $P = V_{eff} I_{eff} \\cos\\varphi = 0$ W. La bobine stocke et restitue l\'énergie sans en dissiper.'},
+  4:   {correct:'1', explanation:'Correct ! $V_2/V_1 = N_2/N_1$, donc $V_2 = 230 \\times 100/500 = 230/5 = 46$ V. C\'est un transformateur abaisseur (moins de spires au secondaire).'},
+  '4b':{correct:'2', explanation:'Correct ! En DC, le flux magnétique est constant : $d\\Phi/dt = 0$. Donc $\\xi_{ind} = 0$. Aucune tension n\'est induite au secondaire. Question posée mot pour mot en juin 2022 !'},
+  5:   {correct:'0', explanation:'Correct ! Par la loi de Lenz, le courant induit s\'oppose à la variation qui lui donne naissance. Le flux diminue (aimant s\'éloigne), donc le courant induit cherche à maintenir le flux — il crée un pôle Sud face à l\'aimant pour l\'attirer et s\'opposer à l\'éloignement.'},
+  6:   {correct:'2', explanation:'Correct ! $F_c = mv^2/R = 0{,}5 \\times 16/2 = 4$ N. Dirigée vers le centre du cercle.'},
+  '6b':{correct:'1', explanation:'Correct ! Au sommet : $T + mg = mv^2/R$. Pour $T = 0$ (limite) : $mg = mv_{min}^2/R$, donc $v_{min} = \\sqrt{gR}$. En dessous de cette vitesse, la corde se détend et la balle ne peut pas compléter le tour.'}
+};
+
+function checkQuiz(qid) {
+  const selected = document.querySelector(`input[name="q${qid}"]:checked`);
+  const fb = document.getElementById(`qfb-${qid}`);
+  if (!selected) return;
+  const data = quizData[qid];
+  const isCorrect = selected.value === data.correct;
+  document.querySelectorAll(`input[name="q${qid}"]`).forEach(inp => {
+    const opt = inp.closest('.quiz-option');
+    if (inp.value === data.correct) opt.classList.add('correct');
+    else if (inp.checked) opt.classList.add('wrong');
+    inp.disabled = true;
+  });
+  fb.className = 'quiz-feedback ' + (isCorrect ? 'correct' : 'wrong');
+  fb.innerHTML = (isCorrect ? '1. Bonne réponse. ' : '0. Mauvaise réponse. ') + data.explanation;
+  fb.style.display = 'block';
+  const btn = fb.previousElementSibling;
+  if (btn && btn.tagName === 'BUTTON') btn.disabled = true;
+  setTimeout(() => {
+    renderMathInElement(fb, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});
+  }, 50);
+}
+
+// ===================== CANVAS =====================
+document.addEventListener('DOMContentLoaded', () => {
+  drawKirchhoff();
+  drawThevenin();
+  drawThevenin2();
+  drawFaraday();
+  drawCircular();
+});
+
+function drawKirchhoff() {
+  const c = document.getElementById('kirchhoff-canvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.fillStyle = '#fff'; ctx.fillRect(0,0,W,H);
+
+  // Simple circuit diagram
+  ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 2;
+  // Outer rectangle
+  ctx.strokeRect(30, 30, W-60, H-60);
+
+  // Pile
+  ctx.fillStyle = '#1e3a5f'; ctx.font = '12px "DM Sans"';
+  ctx.fillText('+', 22, 75); ctx.fillText('V', 22, 95); ctx.fillText('12V', 6, 115);
+
+  // R6 on top
+  drawResistor(ctx, 140, 30, 'h', 'R₆');
+  // R5 on right side
+  drawResistor(ctx, W-30, 80, 'v', 'R₅');
+  // R4 middle
+  drawResistor(ctx, 200, 100, 'h', 'R₄');
+  // R3 lower
+  drawResistor(ctx, 130, 150, 'v', 'R₃');
+  // R1, R2
+  drawResistor(ctx, 80, 150, 'v', 'R₁');
+  ctx.fillText('R₂', 95, 145);
+
+  // Labels for nodes
+  ctx.fillStyle = '#3b82f6'; ctx.font = 'bold 11px "JetBrains Mono"';
+  ['A','B','C','D'].forEach((l,i) => {
+    ctx.fillText(l, [30,140,W-30,200][i]-6, [H-30,H-30,80,80][i]);
+  });
+
+  ctx.fillStyle = '#64748b'; ctx.font = '11px "DM Sans"';
+  ctx.fillText('Schéma simplifié — circuit juin 2012', 80, H-8);
+}
+
+function drawResistor(ctx, x, y, dir, label) {
+  ctx.fillStyle = '#e2e8f0';
+  if (dir === 'h') {
+    ctx.fillRect(x-20, y-7, 40, 14);
+    ctx.strokeRect(x-20, y-7, 40, 14);
+  } else {
+    ctx.fillRect(x-7, y-20, 14, 40);
+    ctx.strokeRect(x-7, y-20, 14, 40);
+  }
+  ctx.fillStyle = '#1e293b'; ctx.font = '11px "JetBrains Mono"';
+  ctx.fillText(label, dir==='h' ? x-12 : x+8, dir==='h' ? y-10 : y-24);
+}
+
+function drawThevenin() {
+  const c = document.getElementById('thevenin-canvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.fillStyle = '#fff'; ctx.fillRect(0,0,W,H);
+
+  // Left: complex circuit
+  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
+  ctx.strokeRect(20, 20, 150, H-40);
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#64748b'; ctx.font = '12px "DM Sans"';
+  ctx.fillText('Circuit', 55, 46);
+  ctx.fillText('complexe', 47, 60);
+  ctx.fillText('R₁, R₂, piles...', 28, 78);
+
+  // Bornes A B
+  ctx.fillStyle = '#dc2626';
+  ctx.beginPath(); ctx.arc(170, 55, 5, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(170, H-55, 5, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#dc2626'; ctx.font = 'bold 12px "DM Sans"';
+  ctx.fillText('A', 178, 59); ctx.fillText('B', 178, H-51);
+
+  // Arrow
+  ctx.fillStyle = '#3b82f6'; ctx.font = 'bold 14px "DM Sans"';
+  ctx.fillText('⟹', 190, H/2+5);
+  ctx.fillStyle = '#64748b'; ctx.font = '11px "DM Sans"';
+  ctx.fillText('Thévenin', 188, H/2+20);
+
+  // Right: equivalent circuit
+  const rx = 250;
+  // V_Th
+  ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(rx+30, H/2, 22, 0, Math.PI*2); ctx.stroke();
+  ctx.fillStyle = '#1e3a5f'; ctx.font = '11px "JetBrains Mono"';
+  ctx.fillText('V_Th', rx+15, H/2+4);
+  // R_Th
+  ctx.fillStyle = '#dbeafe';
+  ctx.fillRect(rx+80, H/2-10, 50, 20);
+  ctx.strokeStyle = '#1e3a5f'; ctx.strokeRect(rx+80, H/2-10, 50, 20);
+  ctx.fillStyle = '#1e293b'; ctx.font = '11px "JetBrains Mono"';
+  ctx.fillText('R_Th', rx+84, H/2+5);
+  // Wires
+  ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(rx, 40); ctx.lineTo(rx+52, 40); ctx.lineTo(rx+52, H/2-22); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(rx+52, H/2+22); ctx.lineTo(rx+52, H-40); ctx.lineTo(rx, H-40); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(rx+130, H/2); ctx.lineTo(W-20, H/2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(rx, 40); ctx.lineTo(rx, H-40); ctx.stroke();
+
+  // Bornes A B right
+  ctx.fillStyle = '#dc2626';
+  ctx.beginPath(); ctx.arc(W-20, 40, 5, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(W-20, H-40, 5, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#dc2626'; ctx.font = 'bold 12px "DM Sans"';
+  ctx.fillText('A', W-14, 44); ctx.fillText('B', W-14, H-36);
+}
+
+function drawThevenin2() {
+  const c = document.getElementById('thevenin2-canvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.fillStyle = '#fff'; ctx.fillRect(0,0,W,H);
+
+  const mx = W/2, my = H/2;
+  // Nodes A, B, C, D
+  const nodes = {A:[40,my], B:[W-40,my], C:[mx,40], D:[mx,H-40]};
+
+  ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 2;
+  // Wires A-C-B top
+  ctx.beginPath(); ctx.moveTo(nodes.A[0],nodes.A[1]); ctx.lineTo(nodes.A[0],nodes.C[1]); ctx.lineTo(nodes.B[0],nodes.C[1]); ctx.lineTo(nodes.B[0],nodes.B[1]); ctx.stroke();
+  // Wire A-D-B bottom
+  ctx.beginPath(); ctx.moveTo(nodes.A[0],nodes.A[1]); ctx.lineTo(nodes.A[0],nodes.D[1]); ctx.lineTo(nodes.B[0],nodes.D[1]); ctx.lineTo(nodes.B[0],nodes.B[1]); ctx.stroke();
+  // Branch CD (R3)
+  ctx.setLineDash([5,3]);
+  ctx.beginPath(); ctx.moveTo(mx,nodes.C[1]); ctx.lineTo(mx,nodes.D[1]); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Pile A-B left
+  ctx.beginPath(); ctx.arc(nodes.A[0]+20, my, 16, 0, Math.PI*2); ctx.stroke();
+  ctx.fillStyle = '#1e293b'; ctx.font = '10px "JetBrains Mono"'; ctx.fillText('V_AB', nodes.A[0]+8, my+4);
+
+  // R1 top
+  ctx.fillStyle = '#dbeafe'; ctx.fillRect(mx-70, nodes.C[1]-8, 50, 16); ctx.strokeRect(mx-70, nodes.C[1]-8, 50, 16);
+  ctx.fillStyle = '#1e293b'; ctx.fillText('R₁', mx-62, nodes.C[1]+4);
+
+  // R2 bottom
+  ctx.fillStyle = '#dbeafe'; ctx.fillRect(mx+20, nodes.D[1]-8, 50, 16); ctx.strokeRect(mx+20, nodes.D[1]-8, 50, 16);
+  ctx.fillText('R₂', mx+28, nodes.D[1]+4);
+
+  // R3 label
+  ctx.fillStyle = '#dc2626'; ctx.font = '10px "JetBrains Mono"';
+  ctx.fillText('R₃ (retirée)', mx+6, my);
+
+  // Node dots
+  Object.entries(nodes).forEach(([name, [x,y]]) => {
+    ctx.fillStyle = '#1e3a5f';
+    ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#1e3a5f'; ctx.font = 'bold 12px "DM Sans"';
+    ctx.fillText(name, x+7, y-5);
+  });
+
+  ctx.fillStyle = '#64748b'; ctx.font = '11px "DM Sans"';
+  ctx.fillText('On cherche V_Th et R_Th entre C et D', 80, H-8);
+}
+
+function drawFaraday() {
+  const c = document.getElementById('faraday-canvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.fillStyle = '#fff'; ctx.fillRect(0,0,W,H);
+
+  // Aimant (left)
+  const ax = 80, ay = H/2;
+  ctx.fillStyle = '#dc2626';
+  ctx.fillRect(ax-50, ay-30, 50, 30);
+  ctx.fillStyle = '#1e3a5f';
+  ctx.fillRect(ax-50, ay, 50, 30);
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 14px "DM Sans"';
+  ctx.fillText('N', ax-30, ay-10);
+  ctx.fillText('S', ax-30, ay+22);
+
+  // Arrow (moving right = approaching)
+  ctx.strokeStyle = '#d97706'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(ax+10, ay); ctx.lineTo(ax+40, ay); ctx.stroke();
+  ctx.fillStyle = '#d97706';
+  ctx.beginPath(); ctx.moveTo(ax+40,ay); ctx.lineTo(ax+30,ay-6); ctx.lineTo(ax+30,ay+6); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#d97706'; ctx.font = '11px "DM Sans"'; ctx.fillText('approche', ax-10, ay-35);
+
+  // Boucle (right)
+  const lx = 300, ly = H/2;
+  ctx.strokeStyle = '#1e3a5f'; ctx.lineWidth = 2.5;
+  ctx.strokeRect(lx-40, ly-40, 80, 80);
+
+  // Flux arrows inside
+  ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 1.5;
+  for (let i = -1; i <= 1; i++) {
+    const fx = lx + i*20;
+    ctx.beginPath(); ctx.moveTo(fx, ly+20); ctx.lineTo(fx, ly-20); ctx.stroke();
+    ctx.fillStyle = '#3b82f6';
+    ctx.beginPath(); ctx.moveTo(fx,ly-20); ctx.lineTo(fx-4,ly-10); ctx.lineTo(fx+4,ly-10); ctx.closePath(); ctx.fill();
+  }
+  ctx.fillStyle = '#3b82f6'; ctx.font = '10px "JetBrains Mono"'; ctx.fillText('Φ↑', lx+10, ly+35);
+
+  // Courant induit (anti-clockwise arrows on loop)
+  ctx.strokeStyle = '#16a34a'; ctx.lineWidth = 2;
+  // Top arrow going left
+  ctx.beginPath(); ctx.moveTo(lx+20, ly-40); ctx.lineTo(lx-20, ly-40); ctx.stroke();
+  ctx.fillStyle = '#16a34a';
+  ctx.beginPath(); ctx.moveTo(lx-20,ly-40); ctx.lineTo(lx-10,ly-46); ctx.lineTo(lx-10,ly-34); ctx.closePath(); ctx.fill();
+
+  ctx.fillStyle = '#16a34a'; ctx.font = '11px "DM Sans"'; ctx.fillText('I_induit (Lenz)', lx-35, ly+58);
+
+  ctx.fillStyle = '#64748b'; ctx.font = '11px "DM Sans"';
+  ctx.fillText('Flux augmente → courant s\'oppose → pôle N vers l\'aimant', 30, H-8);
+}
+
+function drawCircular() {
+  const c = document.getElementById('circular-canvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.fillStyle = '#fff'; ctx.fillRect(0,0,W,H);
+
+  // Hook point
+  const hx = W/2, hy = 30;
+  ctx.fillStyle = '#1e3a5f'; ctx.fillRect(hx-40,15,80,15);
+
+  // Cord to hook
+  ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(hx,hy+15); ctx.lineTo(hx,hy+70); ctx.stroke();
+  ctx.fillStyle = '#64748b'; ctx.font = '11px "DM Sans"'; ctx.fillText('h = 0.75L', hx+4, hy+45);
+
+  // Circle around hook
+  const R = 50; // radius of circular motion
+  ctx.strokeStyle = '#bfdbfe'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(hx, hy+70, R, 0, Math.PI*2); ctx.stroke();
+
+  // Ball at top of circle
+  ctx.fillStyle = '#1d4ed8';
+  ctx.beginPath(); ctx.arc(hx, hy+70-R, 10, 0, Math.PI*2); ctx.fill();
+
+  // Forces at top
+  // mg downward
+  ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(hx, hy+70-R); ctx.lineTo(hx, hy+70-R+35); ctx.stroke();
+  ctx.fillStyle = '#dc2626';
+  ctx.beginPath(); ctx.moveTo(hx,hy+70-R+35); ctx.lineTo(hx-5,hy+70-R+25); ctx.lineTo(hx+5,hy+70-R+25); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#dc2626'; ctx.font = '11px "JetBrains Mono"'; ctx.fillText('mg', hx+6, hy+70-R+20);
+
+  // T downward (cord tension, toward center = down at top)
+  ctx.strokeStyle = '#16a34a'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(hx-15, hy+70-R); ctx.lineTo(hx-15, hy+70-R+25); ctx.stroke();
+  ctx.fillStyle = '#16a34a';
+  ctx.beginPath(); ctx.moveTo(hx-15,hy+70-R+25); ctx.lineTo(hx-20,hy+70-R+15); ctx.lineTo(hx-10,hy+70-R+15); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#16a34a'; ctx.font = '11px "JetBrains Mono"'; ctx.fillText('T', hx-30, hy+70-R+15);
+
+  // v arrow (horizontal at top)
+  ctx.strokeStyle = '#d97706'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(hx, hy+70-R); ctx.lineTo(hx+45, hy+70-R); ctx.stroke();
+  ctx.fillStyle = '#d97706';
+  ctx.beginPath(); ctx.moveTo(hx+45,hy+70-R); ctx.lineTo(hx+35,hy+70-R-5); ctx.lineTo(hx+35,hy+70-R+5); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#d97706'; ctx.font = '11px "JetBrains Mono"'; ctx.fillText('v_haut', hx+48, hy+70-R+4);
+
+  // R label
+  ctx.fillStyle = '#3b82f6'; ctx.font = '11px "JetBrains Mono"';
+  ctx.fillText('R=0.25L', hx+50, hy+85);
+
+  // Equations
+  ctx.fillStyle = '#1e293b'; ctx.font = '12px "DM Sans"';
+  ctx.fillText('Au sommet : T + mg = mv²_haut / R', 20, H-30);
+  ctx.fillText('Condition tendue : v_haut ≥ √(gR)', 20, H-12);
+}
+</script>
+</body>
+</html>
